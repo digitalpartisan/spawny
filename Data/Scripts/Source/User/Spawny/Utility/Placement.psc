@@ -40,6 +40,7 @@ EndStruct
 
 Coordinate Function addCoordinates(Coordinate coordinateA, Coordinate coordinateB) Global
 	if (!coordinateA || !coordinateB)
+		Spawny:Logger:Placement.cannotAddCoordinates(coordinateA, coordinateB)
 		return None
 	endif
 	
@@ -49,11 +50,14 @@ Coordinate Function addCoordinates(Coordinate coordinateA, Coordinate coordinate
 	result.y = coordinateA.y + coordinateB.y
 	result.z = coordinateA.z + coordinateB.z
 	
+	Spawny:Logger:Placement.addedCoordinates(coordinateA, coordinateB, result)
+	
 	return result
 EndFunction
 
 Coordinate Function subtractCoordinates(Coordinate lefthand, Coordinate righthand) Global
 	if (!lefthand || !righthand)
+		Spawny:Logger:Placement.cannotSubtractCoordinates(lefthand, righthand)
 		return None
 	endif
 	
@@ -63,6 +67,8 @@ Coordinate Function subtractCoordinates(Coordinate lefthand, Coordinate righthan
 	result.y = lefthand.y - righthand.y
 	result.z = lefthand.z - righthand.z
 	
+	Spawny:Logger:Placement.subtractedCoordinates(lefthand, righthand, result)
+	
 	return result
 EndFunction
 
@@ -70,12 +76,15 @@ Coordinate Function getPosition(ObjectReference akTargetRef) Global
 	Coordinate position = new Coordinate
 
 	if (!akTargetRef)
+		Spawny:Logger:Placement.cannotGetPosition()
 		return position
 	endif
 	
 	position.x = akTargetRef.GetPositionX()
 	position.y = akTargetRef.GetPositionY()
 	position.z = akTargetRef.GetPositionZ()
+	
+	Spawny:Logger:Placement.gotPosition(akTargetRef, position)
 	
 	return position
 EndFunction
@@ -127,7 +136,7 @@ EndFunction
 Form Function determineForm(Form record) Global
 	FormList list = record as FormList
 	if (!list)
-		return None 
+		return record
 	endif
 	
 	Int iSize = list.GetSize()
@@ -140,9 +149,11 @@ EndFunction
 
 ObjectReference Function placeAt(Form akPlaceMe, ObjectReference akPlaceAt, Bool abForcePersist = false, Bool abInitiallyDisabled = false, Bool abDeleteWhenAble = false) Global
 	if (!akPlaceMe || !akPlaceAt)
+		Spawny:Logger:Placement.cannotPlaceAt(akPlaceMe, akPlaceAt)
 		return None
 	endif
 	
+	Spawny:Logger:Placement.placingAt(akPlaceMe, akPlaceAt, abForcePersist, abInitiallyDisabled, abDeleteWhenAble)
 	return akPlaceAt.PlaceAtMe(determineForm(akPlaceMe), 1, abForcePersist, abInitiallyDisabled, abDeleteWhenAble)
 EndFunction
 
@@ -163,9 +174,11 @@ EndFunction
 
 ObjectReference Function placeAtNode(Form akPlaceMe, ObjectReference akPlaceAt, String asNodeName, Bool abForcePersist = false, Bool abInitiallyDisabled = false, Bool abDeleteWhenAble = false, Bool abAttach = false) Global
 	if (!akPlaceMe || !akPlaceAt || !akPlaceAt.HasNode(asNodeName))
+		Spawny:Logger:Placement.cannotPlaceAtNode(akPlaceMe, akPlaceAt, asNodeName)
 		return None
 	endif
 	
+	Spawny:Logger:Placement.placingAtNode(akPlaceMe, akPlaceAt, asNodeName, abForcePersist, abInitiallyDisabled, abDeleteWhenAble, abAttach)
 	return akPlaceAt.PlaceAtNode(asNodeName, determineForm(akPlaceMe), 1, abForcePersist, abInitiallyDisabled, abDeleteWhenAble, abAttach)
 EndFunction
 
