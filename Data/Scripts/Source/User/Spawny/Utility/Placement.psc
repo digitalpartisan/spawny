@@ -157,10 +157,13 @@ ObjectReference Function placeAt(Form akPlaceMe, ObjectReference akPlaceAt, Bool
 	return akPlaceAt.PlaceAtMe(determineForm(akPlaceMe), 1, abForcePersist, abInitiallyDisabled, abDeleteWhenAble)
 EndFunction
 
-ObjectReference Function placeFormTarget(FormToPlace placementdata, PlacementTarget targetData, PlacementOptions options = None) Global
+ObjectReference Function placeFormTarget(FormToPlace placementData, PlacementTarget targetData, PlacementOptions options = None) Global
 	if (!placementData || !targetData)
+		Spawny:Logger:Placement.cannotPlaceFormTarget(placementData, targetData)
 		return None
 	endif
+	
+	Spawny:Logger:Placement.placingFormTarget(placementData, targetdata, options)
 	
 	Form placeMe = getFormToPlace(placementData)
 	ObjectReference placeAt = getPlacementTarget(targetData)
@@ -184,8 +187,11 @@ EndFunction
 
 ObjectReference Function placeFormTargetNode(FormToPlace placementData, PlacementNodeTarget targetData, NodePlacementOptions options) Global
 	if (!placementData || !targetData)
+		Spawny:Logger:Placement.cannotPlaceFormTargetNode(placementData, targetData)
 		return None
 	endif
+	
+	Spawny:Logger:Placement.placingFormTargetNode(placementData, targetData, options)
 	
 	Form placeMe = getFormToPlace(placementData)
 	ObjectReference placeAt = getPlacementNodeTarget(targetData)
@@ -199,8 +205,10 @@ EndFunction
 
 Function applyOffset(ObjectReference akTargetRef, Coordinate offsetData) Global
 	if (!akTargetRef || !offsetData)
+		Spawny:Logger:Placement.cannotApplyOffset(akTargetRef, offsetData)
 		return
 	endif
 	
+	Spawny:Logger:Placement.applyingOffset(akTargetRef, offsetData)
 	akTargetRef.MoveTo(akTargetRef, akTargetRef.GetPositionX() + offsetData.x, akTargetRef.GetPositionY() + offsetData.y, akTargetRef.GetPositionZ() + offsetData.z)
 EndFunction

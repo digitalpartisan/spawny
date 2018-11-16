@@ -11,6 +11,7 @@ EndStruct
 
 Twist Function addTwists(Twist twistA, Twist twistB) Global
 	if (!twistA || !twistB)
+		Spawny:Logger:Rotation.cannotAddTwists(twistA, twistB)
 		return None
 	endif
 	
@@ -20,11 +21,14 @@ Twist Function addTwists(Twist twistA, Twist twistB) Global
 	result.y = twistA.y + twistB.y
 	result.z = twistA.z + twistB.z
 	
+	Spawny:Logger:Rotation.addedTwists(twistA, twistB, result)
+	
 	return result
 EndFunction
 
 Twist Function subtractTwists(Twist lefthand, Twist righthand) Global
 	if (!lefthand || !righthand)
+		Spawny:Logger:Rotation.cannotSubtractTwists(lefthand, righthand)
 		return None
 	endif
 	
@@ -33,6 +37,8 @@ Twist Function subtractTwists(Twist lefthand, Twist righthand) Global
 	result.x = lefthand.x - righthand.x
 	result.y = lefthand.y - righthand.y
 	result.z = lefthand.z - righthand.z
+	
+	Spawny:Logger:Rotation.subtractedTwists(lefthand, righthand, result)
 	
 	return result
 EndFunction
@@ -44,33 +50,43 @@ Twist Function getTwist(ObjectReference targetRef) Global
 		data.x = targetRef.GetAngleX()
 		data.y = targetRef.GetAngleY()
 		data.z = targetRef.GetAngleZ()
+		
+		Spawny:Logger:Rotation.gotTwist(targetRef, data)
+	else
+		Spawny:Logger:Rotation.cannotGetTwist()
 	endif
 	
 	return data
 EndFunction
 
-Function applyRotation(ObjectReference targetRef, Float xAngle, Float yAngle, Float zAngle) Global
-	if (!targetRef)
+Function applyRotation(ObjectReference akTargetRef, Float xAngle = 0.0, Float yAngle = 0.0, Float zAngle = 0.0) Global
+	if (!akTargetRef)
+		Spawny:Logger:Rotation.cannotApplyRotation()
 		return
 	endif
 	
-	targetRef.SetAngle(xAngle, yAngle, zAngle)
+	Spawny:Logger:Rotation.applyingRotation(akTargetRef, xAngle, yAngle, zAngle)
+	akTargetRef.SetAngle(xAngle, yAngle, zAngle)
 EndFunction
 
-Function applyTwist(ObjectReference targetRef, Twist data) Global
-	if (!targetRef || !data)
+Function applyTwist(ObjectReference akTargetRef, Twist data) Global
+	if (!akTargetRef || !data)
+		Spawny:Logger:Rotation.cannotApplyTwist(akTargetRef, data)
 		return
 	endif
 	
-	applyRotation(targetRef, data.x, data.y, data.z)
+	Spawny:Logger:Rotation.applyingTwist(akTargetRef, data)
+	applyRotation(akTargetRef, data.x, data.y, data.z)
 EndFunction
 
 Coordinate Function twistCoordinate(Coordinate coordinateData, Twist rotationData) Global
 	if (!coordinateData)
+		Spawny:Logger:Rotation.cannotRotateCoordinate(coordinateData, rotationData)
 		return None
 	endif
 	
 	if (!rotationData)
+		Spawny:Logger:Rotation.cannotRotateCoordinate(coordinateData, rotationData)
 		return coordinateData
 	endif
 	
@@ -80,6 +96,7 @@ Coordinate Function twistCoordinate(Coordinate coordinateData, Twist rotationDat
 	result.z = coordinateData.z
 	
 	; rotation logic taken from https://stackoverflow.com/questions/14607640/rotating-a-vector-in-3d-space
+	; Note this logic does not work well with twists in more than two dimensions, which aren't needed in 3D space regardless
 	
 	; x rotation
 	Float sinX = sin(rotationData.x)
@@ -98,6 +115,8 @@ Coordinate Function twistCoordinate(Coordinate coordinateData, Twist rotationDat
 	Float cosZ = cos(rotationData.z)
 	result.x = result.x * cosZ - result.y * sinZ
 	result.y = result.x * sinZ + result.y * cosZ
+	
+	Spawny:Logger:Rotation.rotatedCoordinate(coordinateData, rotationData, result)
 	
 	return result
 EndFunction

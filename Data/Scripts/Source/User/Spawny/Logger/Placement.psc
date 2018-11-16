@@ -53,9 +53,33 @@ Bool Function placingAt(Form afFormToPlace, ObjectReference akPlacementTarget, B
 EndFunction
 
 Bool Function cannotPlaceAtNode(Form afFormToPlace, ObjectReference akPlacementTarget, String asNodeName) Global
-	return error("cannot place " + afFormToPlace + " at " + akPlacementTarget + " on node " + asNodeName)
+	return error("Cannot place " + afFormToPlace + " at " + akPlacementTarget + " on node " + asNodeName)
 EndFunction
 
 Bool Function placingAtNode(Form afFormToPlace, ObjectReference akPlacementTarget, String asNodeName, Bool abForcePersist, Bool abInitiallyDisabled, Bool abDeleteWhenAble, Bool abAttach) Global
 	return log("Placing " + afFormToPlace + " at " + akPlacementTarget + " on node " + asNodeName + " with force persist: " + abForcePersist + " initially disabled: " + abInitiallyDisabled + " delete when able: " + abDeleteWhenAble + " attach: " + abAttach)
+EndFunction
+
+Bool Function cannotPlaceFormTarget(FormToPlace placementData, PlacementTarget targetData) Global
+	return error("Cannot place " + placementData + " at " + targetData)
+EndFunction
+
+Bool Function placingFormTarget(FormToPlace placementData, PlacementTarget targetData, PlacementOptions options) Global
+	return log("Placing " + placementData + " at " + targetData + " with options " + options)
+EndFunction
+
+Bool Function cannotPlaceFormTargetNode(FormToPlace placementData, PlacementNodeTarget targetData) Global
+	return error("Cannot place " + placementData + " at " + targetData)
+EndFunction
+
+Bool Function placingFormTargetNode(FormToPlace placementData, PlacementNodeTarget targetData, NodePlacementOptions options) Global
+	return log("Placing " + placementData + " at " + targetData + " with options " + options)
+EndFunction
+
+Bool Function cannotApplyOffset(ObjectReference akTargetRef, Coordinate movement) Global
+	return error("Cannot apply offset " + movement + " to reference " + akTargetRef)
+EndFunction
+
+Bool Function applyingOffset(ObjectReference akTargetRef, Coordinate movement) Global
+	return log("Applying offset " + movement + " to reference " + akTargetRef)
 EndFunction
