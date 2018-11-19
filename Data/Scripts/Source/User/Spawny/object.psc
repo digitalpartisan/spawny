@@ -1,3 +1,0 @@
-Scriptname Spawny:Object Hidden
-
-
