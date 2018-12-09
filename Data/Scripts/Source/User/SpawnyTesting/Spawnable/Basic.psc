@@ -21,20 +21,31 @@ EndGroup
 
 ObjectReference spawnedReference = None
 
-ObjectReference Function spawnLogic()
-	ObjectReference newRef = place(PlaceMe, TargetReference)
+Function spawnLogic()
+	spawnedReference = place(PlaceMe, TargetReference)
+	
+	if (!spawnedReference)
+		despawn()
+		return
+	endif
 	
 	if (OffsetValue)
-		offset(newRef, OffsetValue)
+		offset(spawnedReference, OffsetValue)
 	endif
 	
 	if (ResetRotation)
-		resetRotation(newRef)
+		resetRotation(spawnedReference)
 	endif
 	
 	if (RotationValue)
-		rotate(newRef, RotationValue, AbsoluteRotation)
+		rotate(spawnedReference, RotationValue, AbsoluteRotation)
 	endif
-	
-	return newRef
+EndFunction
+
+Function despawnLogic()
+	if (spawnedReference)
+		spawnedReference.Disable()
+		spawnedReference.Delete()
+		spawnedReference = None
+	endif
 EndFunction
