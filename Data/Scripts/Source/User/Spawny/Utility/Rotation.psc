@@ -1,5 +1,8 @@
 Scriptname Spawny:Utility:Rotation Hidden Const
 
+Import Spawny:Utility:Movement
+Import Math
+
 Struct Twist
 	Float x = 0.0
 	Float y = 0.0
