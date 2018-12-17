@@ -1,4 +1,4 @@
-Scriptname Spawny:Reusable:Form extends Quest Hidden Const
+Scriptname Spawny:Reusable:Form extends Quest Hidden
 
 Form Function getSetting()
 	return None

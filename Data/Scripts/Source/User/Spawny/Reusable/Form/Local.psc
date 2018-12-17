@@ -1,4 +1,4 @@
-Scriptname Spawny:Reusable:Form:Local extends Spawny:Reusable:Form Const
+Scriptname Spawny:Reusable:Form:Local extends Spawny:Reusable:Form
 
 Form Property MyForm Auto Const Mandatory
 

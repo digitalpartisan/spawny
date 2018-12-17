@@ -1,4 +1,4 @@
-Scriptname Spawny:Reusable:Reference:Local extends Spawny:Reusable:Reference Const
+Scriptname Spawny:Reusable:Reference:Local extends Spawny:Reusable:Reference
 
 ObjectReference Property MyReference Auto Const Mandatory
 

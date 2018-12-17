@@ -1,8 +1,5 @@
 Scriptname Spawny:Utility:Rotation Hidden Const
 
-Import Spawny:Utility:Movement
-Import Math
-
 Struct Twist
 	Float x = 0.0
 	Float y = 0.0
@@ -38,27 +35,10 @@ Twist Function getTwist(ObjectReference akTargetRef) Global
 	return buildTwist(akTargetRef.GetAngleX(), akTargetRef.GetAngleY(), akTargetRef.GetAngleZ())
 EndFunction
 
-Twist Function add(Twist lefthand, Twist righthand) Global
+Twist Function addTwists(Twist lefthand, Twist righthand) Global
 	return buildTwist(lefthand.x + righthand.x, lefthand.y + righthand.y, lefthand.z + righthand.z)
 EndFunction
 
-Twist Function subtract(Twist lefthand, Twist righthand) Global
+Twist Function subtractTwists(Twist lefthand, Twist righthand) Global
 	return buildTwist(lefthand.x - righthand.x, lefthand.y - righthand.y, lefthand.z - righthand.z)
-EndFunction
-
-Function rotate(ObjectReference akTargetRef, Twist rotation, Bool bAbsolute = true) Global
-	if (!akTargetRef || !rotation)
-		return
-	endif
-	
-	Twist twistToApply = copyTwist(rotation)
-	if (!bAbsolute)
-		twistToApply = add(getTwist(akTargetRef), rotation)
-	endif
-	
-	akTargetRef.SetAngle(twistToApply.x, twistToApply.y, twistToApply.z)
-EndFunction
-
-Function resetRotation(ObjectReference akTargetRef) Global
-	rotate(akTargetRef, buildZeroTwist())
 EndFunction

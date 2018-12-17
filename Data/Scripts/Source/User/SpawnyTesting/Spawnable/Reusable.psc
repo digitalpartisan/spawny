@@ -1,14 +1,12 @@
-Scriptname SpawnyTesting:Spawnable:Basic extends SpawnyTesting:Spawnable
+Scriptname SpawnyTesting:Spawnable:Reusable extends SpawnyTesting:Spawnable
 
 Import Spawny:Utility:Placement
 Import Spawny:Utility:Movement
 Import Spawny:Utility:Rotation
 Import Spawny:Utility:Modification
 
-Group SpawnSettings
-	Form Property PlaceMe Auto Const Mandatory
-	ObjectReference Property TargetReference Auto Const Mandatory
-EndGroup
+Spawny:Reusable:Form Property MyForm Auto Const Mandatory
+Spawny:Reusable:Reference Property MyReference Auto Const Mandatory
 
 Group MovementSettings
 	Coordinate Property OffsetValue Auto Const
@@ -24,10 +22,14 @@ EndGroup
 ObjectReference spawnedReference = None
 
 Function spawnLogic()
-	spawnedReference = place(PlaceMe, TargetReference)
+	objectreference targetref = MyReference.getSetting()
+	if (!targetref)
+		Debug.MessageBox("no reference found")
+	endif
+	
+	spawnedReference = place(MyForm.getSetting(), targetref)
 	
 	if (!spawnedReference)
-		despawn()
 		return
 	endif
 	

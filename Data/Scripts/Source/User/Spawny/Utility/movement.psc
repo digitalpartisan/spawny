@@ -15,6 +15,10 @@ Coordinate Function buildCoordinate(Float xValue = 0.0, Float yValue = 0.0, Floa
 	return newCoordinate
 EndFunction
 
+Coordinate Function buildZeroCoordinate() Global
+	return buildCoordinate()
+EndFunction
+
 Coordinate Function copyCoordinate(Coordinate values) Global
 	if (!values)
 		return None
@@ -31,7 +35,7 @@ Coordinate Function getPosition(ObjectReference akTargetRef) Global
 	return buildCoordinate(akTargetRef.GetPositionX(), akTargetRef.GetPositionY(), akTargetRef.GetPositionZ())
 EndFunction
 
-Coordinate Function add(Coordinate lefthand, Coordinate righthand) Global
+Coordinate Function addCoordinates(Coordinate lefthand, Coordinate righthand) Global
 	if (!leftHand || !rightHand)
 		return None
 	endif
@@ -39,26 +43,10 @@ Coordinate Function add(Coordinate lefthand, Coordinate righthand) Global
 	return buildCoordinate(lefthand.x + righthand.x, lefthand.y + righthand.y, lefthand.z + righthand.z)
 EndFunction
 
-Coordinate Function subtract(Coordinate lefthand, Coordinate righthand) Global
+Coordinate Function subtractCoordinates(Coordinate lefthand, Coordinate righthand) Global
 	if (!lefthand || !righthand)
 		return None
 	endif
 	
 	return buildCoordinate(lefthand.x - righthand.x, lefthand.y - righthand.y, lefthand.z - righthand.z)
-EndFunction
-
-Function offset(ObjectReference akTargetRef, Coordinate offset) Global
-	if (!akTargetRef || !offset)
-		return
-	endif
-	
-	akTargetRef.MoveTo(akTargetRef, offset.x, offset.y, offset.z)
-EndFunction
-
-Function moveTo(ObjectReference akRefToMove, ObjectReference akNewLocationRef, Coordinate offset, Bool bMatchRotation = true) Global
-	if (!akRefToMove || !akNewLocationRef || !offset)
-		return
-	endif
-	
-	akRefToMove.MoveTo(akNewLocationRef, offset.x, offset.y, offset.z, bMatchRotation)
 EndFunction

@@ -14,6 +14,7 @@ EndStruct
 
 Form Function load(InjectTec:Plugin plugin, Int iID) Global
 	if (!plugin || !iID)
+	Debug.MessageBox("busted")
 		return None
 	endif
 
@@ -21,23 +22,25 @@ Form Function load(InjectTec:Plugin plugin, Int iID) Global
 EndFunction
 
 ObjectReference Function loadReference(InjectTec:Plugin plugin, Int iID) Global
-	return load(plugin, iID) as ObjectReference
+	Form loaded = load(plugin, iID)
+	if (!loaded)
+		Debug.MessageBox("did not load form " + iID)
+	endif
+	return loaded as ObjectReference
 EndFunction
 
-Form Function populateForm(FormData data) Global
+Function populateForm(FormData data) Global
 	if (!data)
 		return None
 	endif
 	
 	data.record = load(data.plugin, data.id)
-	return data.record
 EndFunction
 
-ObjectReference Function populateObjectReference(ObjectReferenceData data) Global
+Function populateObjectReference(ObjectReferenceData data) Global
 	if (!data)
 		return None
 	endif
 	
 	data.reference = loadReference(data.plugin, data.id)
-	return data.reference
 EndFunction
