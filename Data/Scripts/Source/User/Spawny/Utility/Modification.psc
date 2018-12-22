@@ -4,91 +4,59 @@ Import Spawny:Utility:Movement
 Import Spawny:Utility:Rotation
 Import Math
 
-Function offset(ObjectReference akTargetRef, Coordinate offset, Bool bRelative = true) Global
+Function offset(ObjectReference akTargetRef, Coordinate offset, Bool abRelative = true) Global
 	if (!akTargetRef || !offset)
+		Spawny:Logger:Modification.logCannotOffset(akTargetRef, offset)
 		return
 	endif
 	
 	Coordinate realOffset = copyCoordinate(offset)
-	if (bRelative)
+	if (abRelative)
 		realOffset = rotateCoordinate(realOffset, getTwist(akTargetRef))
 	endif
 	
+	Spawny:Logger:Modification.logOffset(akTargetRef, offset, abRelative, realOffset)
 	akTargetRef.MoveTo(akTargetRef, realOffset.x, realOffset.y, realOffset.z)
 EndFunction
 
 Function resetPosition(ObjectReference akTargetRef) Global
 	if (!akTargetRef)
+		Spawny:Logger:Modification.logCannotResetPosition(akTargetRef)
 		return
 	endif
 	
+	Spawny:Logger:Modification.logResetPosition(akTargetRef)
 	offset(akTargetRef, buildZeroCoordinate(), false)
 EndFunction
 
-Function rotate(ObjectReference akTargetRef, Twist rotation, Bool bRelative = true) Global
-	if (!akTargetRef || !rotation)
+Function rotate(ObjectReference akTargetRef, Twist angles, Bool abRelative = true) Global
+	if (!akTargetRef || !angles)
+		Spawny:Logger:Modification.logCannotRotate(akTargetRef, angles)
 		return
 	endif
 	
-	Twist twistToApply = copyTwist(rotation)
-	if (bRelative)
-		twistToApply = addTwists(getTwist(akTargetRef), rotation)
+	Twist twistToApply = copyTwist(angles)
+	if (abRelative)
+		twistToApply = addTwists(getTwist(akTargetRef), angles)
 	endif
 	
+	Spawny:Logger:Modification.logRotate(akTargetRef, angles, abRelative, twistToApply)
 	akTargetRef.SetAngle(twistToApply.x, twistToApply.y, twistToApply.z)
 EndFunction
 
 Function resetRotation(ObjectReference akTargetRef) Global
+	if (!akTargetRef)
+		Spawny:Logger:Modification.logCannotResetRotation(akTargetRef)
+		return
+	endif
+	
+	Spawny:Logger:Modification.logResetRotation(akTargetRef)
 	rotate(akTargetRef, buildZeroTwist(), false)
-EndFunction
-
-Coordinate Function rotateXAxis(Coordinate coordinates, Twist angles) Global
-	if (!coordinates || !angles)
-		return coordinates
-	endif
-	
-	Coordinate result = copyCoordinate(coordinates)
-	
-	Float sinX = sin(angles.x)
-	Float cosX = cos(angles.x)
-	result.y = coordinates.y * cosX + coordinates.z * sinX
-	result.z = -1 * coordinates.y * sinX + coordinates.z * cosX
-	
-	return result
-EndFunction
-
-Coordinate Function rotateYAxis(Coordinate coordinates, Twist angles) Global
-	if (!coordinates || !angles)
-		return coordinates
-	endif
-	
-	Coordinate result = copyCoordinate(coordinates)
-	
-	Float sinY = sin(angles.y)
-	Float cosY = cos(angles.y)
-	result.x = coordinates.x * cosY + -1 * coordinates.z * sinY
-	result.z = coordinates.x * sinY + coordinates.z * cosY
-	
-	return result
-EndFunction
-
-Coordinate Function rotateZAxis(Coordinate coordinates, Twist angles) Global
-	if (!coordinates || !angles)
-		return coordinates
-	endif
-	
-	Coordinate result = copyCoordinate(coordinates)
-	
-	Float sinZ = sin(angles.z)
-	Float cosZ = cos(angles.z)
-	result.x = coordinates.x * cosZ + coordinates.y * sinZ
-	result.y = -1 * coordinates.x * sinZ + coordinates.y * cosZ
-	
-	return result
 EndFunction
 
 Coordinate Function rotateCoordinate(Coordinate coordinates, Twist angles) Global
 	if (!coordinates || !angles)
+		Spawny:Logger:Modification.logCannotRotateCoordinate(coordinates, angles)
 		return coordinates
 	endif
 	
@@ -114,5 +82,35 @@ Coordinate Function rotateCoordinate(Coordinate coordinates, Twist angles) Globa
 	result.y = intermediate.y * cosX + intermediate.z * sinX
 	result.z = -1 * intermediate.y * sinX + intermediate.z * cosX
 	
+	Spawny:Logger:Modification.logRotateCoordinate(coordinates, angles, result)
 	return result
+EndFunction
+
+Function toggleStatic(ObjectReference akTargetRef, Bool abMakeStatic = true) Global
+	if (!akTargetRef)
+		Spawny:Logger:Modification.logCannotToggleStatic(akTargetRef)
+		return
+	endif
+	
+	Bool bBlockActivation = false
+	Bool bHideActivateText = false
+	Int iMotionType = akTargetRef.Motion_Dynamic
+	if (abMakeStatic)
+		bBlockActivation = true
+		bHideActivateText = true
+		iMotionType = akTargetRef.Motion_Keyframed
+	endif
+	
+	akTargetRef.BlockActivation(bBlockActivation, bHideActivateText)
+	akTargetRef.SetMotionType(iMotionType)
+EndFunction
+
+Function makeStatic(ObjectReference akTargetRef) Global
+	Spawny:Logger:Modification.logMakeStatic(akTargetRef)
+	toggleStatic(akTargetRef)
+EndFunction
+
+Function unmakeStatic(ObjectReference akTargetRef) Global
+	Spawny:Logger:Modification.logUnmakeStatic(akTargetRef)
+	toggleStatic(akTargetRef, false)
 EndFunction

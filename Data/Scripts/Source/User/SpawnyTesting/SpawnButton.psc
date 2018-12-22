@@ -1,20 +1,20 @@
 Scriptname SpawnyTesting:SpawnButton extends ObjectReference
 
-SpawnyTesting:Spawnable[] Property Spawnables Auto Const Mandatory
+Spawny:Spawner[] Property Spawners Auto Const Mandatory
 Message Property SpawnyTesting_ActivatorText_Spawn Auto Const Mandatory
 Message Property SpawnyTesting_ActivatorText_Despawn Auto Const Mandatory
 
-Function handleSpawns(Bool bSpawn = true)
-	if (!Spawnables || 0 == Spawnables.Length)
+Function handleSpawners(Bool bSpawn = true)
+	if (!Spawners || 0 == Spawners.Length)
 		return
 	endif
 	
 	Int iCounter = 0
-	while (iCounter < Spawnables.Length)
+	while (iCounter < Spawners.Length)
 		if (bSpawn)
-			Spawnables[iCounter].Start()
+			Spawners[iCounter].Start()
 		else
-			Spawnables[iCounter].Stop()
+			Spawners[iCounter].Stop()
 		endif
 		
 		iCounter += 1
@@ -23,7 +23,7 @@ EndFunction
 
 Auto State Despawned
 	Event OnBeginState(String asOldState)
-		handleSpawns(false)
+		handleSpawners(false)
 		SetActivateTextOverride(SpawnyTesting_ActivatorText_Spawn)
 	EndEvent
 	
@@ -34,7 +34,7 @@ EndState
 
 State Spawned
 	Event OnBeginState(String asOldState)
-		handleSpawns()
+		handleSpawners()
 		SetActivateTextOverride(SpawnyTesting_ActivatorText_Despawn)
 	EndEvent
 	

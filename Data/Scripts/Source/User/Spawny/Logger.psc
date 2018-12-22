@@ -17,5 +17,5 @@ Bool Function error(String sMessage, String[] tags = None) Global
 EndFunction
 
 Bool Function logBehaviorUndefined(ScriptObject scriptRef, String sName) Global
-	return error("Behavior " + sName + " undefined on " + scriptRef)
+	return warn("Behavior " + sName + " undefined on " + scriptRef)
 EndFunction

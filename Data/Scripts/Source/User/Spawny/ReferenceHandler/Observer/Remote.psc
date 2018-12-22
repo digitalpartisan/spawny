@@ -1,4 +1,4 @@
-Scriptname Spawny:ReferenceHandler:Remote extends Spawny:ReferenceHandler
+Scriptname Spawny:ReferenceHandler:Observer:Remote extends Spawny:ReferenceHandler:Observer
 
 Group ReferenceSettings
 	InjectTec:Plugin Property MyPlugin Auto Const Mandatory
@@ -12,12 +12,6 @@ EndGroup
 
 Location targetLocation = None
 Cell targetCell = None
-ObjectReference targetReference = None
-
-Function sendReferenceReady()
-	stopEventObservation()
-	parent.sendReferenceReady()
-EndFunction
 
 Bool Function hasCellSetting()
 	return CellID > 0
@@ -83,24 +77,15 @@ Bool Function attemptCellLoad()
 	return hasCell()
 EndFunction
 
-ObjectReference Function getReference()
-	return targetReference
-EndFunction
-
-Function setReference(ObjectReference akNewValue)
-	targetReference = akNewValue
-EndFunction
-
-Function clearReference()
-	setReference(None)
-EndFunction
-
 Bool Function attemptReferenceLoad()
 	if (isPluginValid())
 		setReference(MyPlugin.lookupForm(ReferenceID) as ObjectReference)
 	endif
 	
-	return hasReference()
+	if (hasReference())
+		Spawny:Logger.log(self + " got a reference!")
+		goToReady()
+	endif
 EndFunction
 
 Bool Function isPlayerInLocation()
@@ -121,13 +106,12 @@ EndFunction
 
 Function stateCheck()
 	Spawny:Logger.log(self + " is checking state")
-
+	
 	if (!isPluginValid()); paranoia, but if the plugin is suddenly out of the load order, drop everything for the sake of safety
-		Stop()
-		return
+		goToDormant()
 	endif
 	
-	if (getLocation() == Game.GetPlayer().GetCurrentLocation())
+	if (isPlayerInLocation())
 		if (hasCellSetting())
 			if (attemptCellLoad())
 				Spawny:Logger.log(self + " detected its cell is loaded")
@@ -139,11 +123,6 @@ Function stateCheck()
 		else
 			attemptReferenceLoad()
 		endif
-	endif
-	
-	if (hasReference())
-		Spawny:Logger.log(self + " got a reference!")
-		sendReferenceReady()
 	endif
 EndFunction
 
@@ -162,28 +141,16 @@ Event Actor.OnLocationChange(Actor akSender, Location akOldLoc, Location akNewLo
 	endif
 EndEvent
 
+Function timerHandler()
+	stateCheck()
+EndFunction
+
 Event OnTimer(Int aiTimerID)
 	if (TimerID == aiTimerID)
 		Spawny:Logger.log(self + " detected a timer event")
-		stateCheck()
+		timerHandler()
 	endif
 EndEvent
-
-Function observeGameLoad()
-	RegisterForRemoteEvent(Game.GetPlayer(), "OnPlayerLoadGame")
-EndFunction
-
-Function stopObservingGameLoad()
-	UnregisterForRemoteEvent(Game.GetPlayer(), "OnPlayerLoadGame")
-EndFunction
-
-Function observeLocationChange()
-	RegisterForRemoteEvent(Game.GetPlayer(), "OnLocationChange")
-EndFunction
-
-Function stopObservingLocationChange()
-	UnregisterForRemoteEvent(Game.GetPlayer(), "OnLocationChange")
-EndFunction
 
 Function startCheckTimer()
 	StartTimer(getTimerDuration(), TimerID)
@@ -193,10 +160,9 @@ Function cancelCheckTimer()
 	CancelTimer(TimerID)
 EndFunction
 
-Function stopEventObservation()
+Function stopObservingEvents()
+	parent.stopObservingEvents()
 	cancelCheckTimer()
-	stopObservingLocationChange()
-	stopObservingGameLoad()
 EndFunction
 
 Function clearLoadedForms()
@@ -205,37 +171,24 @@ Function clearLoadedForms()
 	clearLocation()
 EndFunction
 
-Function startupBehavior()
+Function beginDormant(String asOldState)
+	clearLoadedForms()
+EndFunction
+
+Function beginObserving(String asOldState)
 	if (!isPluginValid())
 		Spawny:Logger.log(self + " has invalid plugin")
-		Stop()
+		goToDormant()
 		return
 	endif
 	
 	if (!attemptLocationLoad())
 		Spawny:Logger.log(self + " has invalid location ID")
-		Stop()
+		goToDormant()
 		return
 	endif
 	
 	Spawny:Logger.log(self + "loaded everything")
 	
-	observeLocationChange()
-	observeGameLoad()
-	stateCheck()
+	parent.beginObserving(asOldState)
 EndFunction
-
-Event OnQuestInit()
-	Spawny:Logger.log(self + " is starting")
-	startupBehavior()
-EndEvent
-
-Function shutdownBehavior()
-	stopEventObservation()
-	clearLoadedForms()
-EndFunction
-
-Event OnQuestShutdown()
-	Spawny:Logger.log(self + " is stopping")
-	shutdownBehavior()
-EndEvent

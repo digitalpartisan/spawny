@@ -12,8 +12,13 @@ EndGroup
 
 Group RotationSettings
 	Bool Property ResetRotation = false Auto Const
-	Twist Property Rotation = None Auto Const
+	Twist Property Angles = None Auto Const
 	Bool Property RelativeRotation = true Auto Const
+EndGroup
+
+Group BehaviorSettings
+	Bool Property ForceStatic = false Auto Const
+	Bool Property Enable = false Auto Const
 EndGroup
 
 Function applyPosition(ObjectReference akTargetRef)
@@ -39,16 +44,27 @@ Function applyRotation(ObjectReference akTargetRef)
 		resetRotation(akTargetRef)
 	endif
 	
-	if (Rotation)
-		rotate(akTargetRef, Rotation, RelativeRotation)
+	if (Angles)
+		rotate(akTargetRef, Angles, RelativeRotation)
 	endif
 EndFunction
 
 Function apply(ObjectReference akTargetRef)
 	if (!akTargetRef)
+		Spawny:Logger:Modification.logModifierCannotApply(self, akTargetRef)
 		return
 	endif
 	
+	Spawny:Logger:Modification.logModifierApply(self, akTargetRef)
+	
 	applyPosition(akTargetRef)
 	applyRotation(akTargetRef)
+	
+	if (ForceStatic)
+		makeStatic(akTargetRef)
+	endif
+	
+	if (Enable)
+		akTargetRef.Enable()
+	endif
 EndFunction
