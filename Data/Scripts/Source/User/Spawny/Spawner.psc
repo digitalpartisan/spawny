@@ -62,19 +62,19 @@ Function despawn()
 EndFunction
 
 Function startupBehavior()
-	Spawny:Logger:Spawner.logStartup(self)
 	spawn()
 EndFunction
 
 Function shutdownBehavior()
-	Spawny:Logger:Spawner.logShutdown(self)
 	despawn()
 EndFunction
 
 Event OnQuestInit()
+	Spawny:Logger:Spawner.logStartup(self)
 	startupBehavior()
 EndEvent
 
 Event OnQuestShutdown()
+	Spawny:Logger:Spawner.logShutdown(self)
 	shutdownBehavior()
 EndEvent
