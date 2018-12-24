@@ -7,15 +7,22 @@ Struct ReferenceNode
 	String node = ""
 EndStruct
 
-ReferenceNode[] Property ReferenceNodes = None Auto Const Mandatory
-Keyword Property BlockWorkshopInteractionKeyword Auto Const Mandatory
-Options Property PlacementOptions = None Auto Const
+Group PlacementSettings
+	ReferenceNode[] Property ReferenceNodes = None Auto Const Mandatory
+	Keyword Property BlockWorkshopInteractionKeyword Auto Const Mandatory
+	Options Property PlacementOptions = None Auto Const
+EndGroup
 
-Message Property ActivationMessage Auto Const Mandatory
-Int Property RemovalOption = 0 Auto Const
+Group ItemActivationSettings
+	Message Property ActivationMessage = None Auto Const
+	Int Property RemovalOption = 0 Auto Const
+	Bool Property AllowItemActivation = false Auto Const
+EndGroup
 
-Keyword Property RequiredKeyword = None Auto Const
-FormList Property FormListFilter = None Auto Const
+Group AllowedFormsSettings
+	Keyword Property RequiredKeyword = None Auto Const
+	FormList Property FormListFilter = None Auto Const
+EndGroup
 
 Form[] containerContents = None
 
@@ -70,12 +77,17 @@ Function displayReference(ReferenceNode data, Form fFormToDisplay)
 		return
 	endif
 	
-	data.reference.BlockActivation()
 	data.reference.SetMotionType(Motion_Keyframed, false)
 	data.reference.AddKeyword(BlockWorkshopInteractionKeyword)
 	data.reference.SetNoFavorAllowed()
 	data.reference.SetPlayerHasTaken()
-	RegisterForRemoteEvent(data.reference, "OnActivate")
+	
+	if (AllowItemActivation)
+		data.reference.BlockActivation()
+		RegisterForRemoteEvent(data.reference, "OnActivate")
+	else
+		data.reference.BlockActivation(true, true)
+	endif
 EndFunction
 
 Function displayReferences()
@@ -115,7 +127,7 @@ Event OnWorkshopObjectDestroyed(ObjectReference akActionRef)
 EndEvent
 
 Event ObjectReference.OnActivate(ObjectReference akSender, ObjectReference akActionRef)
-	if (Game.GetPlayer() != akActionRef)
+	if (Game.GetPlayer() != akActionRef || !AllowItemActivation)
 		return
 	endif
 	
@@ -129,7 +141,7 @@ Event ObjectReference.OnActivate(ObjectReference akSender, ObjectReference akAct
 		return
 	endif
 	
-	if (RemovalOption != ActivationMessage.Show())
+	if (ActivationMessage && RemovalOption != ActivationMessage.Show())
 		return
 	endif
 	
