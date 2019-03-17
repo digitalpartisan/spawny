@@ -42,14 +42,6 @@ Bool Function isAllowed(Form akFormValue)
 	return false
 EndFunction
 
-Int Function getMaxContents()
-	if (ReferenceNodes)
-		return ReferenceNodes.Length
-	endif
-	
-	return 0
-EndFunction
-
 Int Function getIndexForReference(ObjectReference akTargetRef)
 	if (ReferenceNodes)
 		return ReferenceNodes.FindStruct("reference", akTargetRef)
@@ -93,7 +85,7 @@ EndFunction
 Function displayReferences()
 	Spawny:Logger.log("displaying references")
 	Int iCounter = 0
-	while (iCounter < containerContents.Length)
+	while (iCounter < containerContents.Length && iCounter < ReferenceNodes.Length)
 		displayReference(getReferenceNodeAtIndex(iCounter), containerContents[iCounter])
 		iCounter += 1
 	endWhile
