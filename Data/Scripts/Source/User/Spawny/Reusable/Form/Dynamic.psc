@@ -2,18 +2,18 @@ Scriptname Spawny:Reusable:Form:Dynamic extends Spawny:Reusable:Form
 
 Form fMyForm = None
 
-Bool Function hasForm()
-	return None != getSetting()
+Form Function getForm()
+	return fMyForm
 EndFunction
 
-Function set(Form afNewValue)
+Bool Function hasForm()
+	return None != getForm()
+EndFunction
+
+Function setForm(Form afNewValue)
 	fMyForm = afNewValue
 EndFunction
 
-Function clear()
-	set(None)
-EndFunction
-
-Form Function getSetting()
-	return fMyForm
+Function clearForm()
+	setForm(None)
 EndFunction

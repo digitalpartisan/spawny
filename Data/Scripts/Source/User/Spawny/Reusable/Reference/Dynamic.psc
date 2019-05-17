@@ -2,18 +2,18 @@ Scriptname Spawny:Reusable:Reference:Dynamic extends Spawny:Reusable:Reference
 
 ObjectReference kMyReference = None
 
-Bool Function hasReference()
-	return None != getSetting()
+ObjectReference Function getReference()
+	return kMyReference
 EndFunction
 
-Function set(ObjectReference akNewValue)
+Bool Function hasReference()
+	return None != getReference()
+EndFunction
+
+Function setReference(ObjectReference akNewValue)
 	kMyReference = akNewValue
 EndFunction
 
-Function clear()
-	set(None)
-EndFunction
-
-ObjectReference Function getSetting()
-	return kMyReference
+Function clearReference()
+	setReference(None)
 EndFunction

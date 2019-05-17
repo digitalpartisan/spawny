@@ -1,6 +1,6 @@
 Scriptname Spawny:Reusable:Reference extends Quest Hidden
 
-ObjectReference Function getSetting()
-	Spawny:Logger.logBehaviorUndefined(self, "getSetting")
+ObjectReference Function getReference()
+	Spawny:Logger.logBehaviorUndefined(self, "getReference")
 	return None
 EndFunction

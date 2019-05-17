@@ -1,11 +1,18 @@
 Scriptname Spawny:Reusable:Reference:Random extends Spawny:Reusable:Reference
 
-ObjectReference[] Property References = None Auto Mandatory
+ObjectReference[] Property References = None Auto Const Mandatory
+
+ObjectReference[] myReferences = None
 
 Function init()
-	if (None == References)
-		References = new ObjectReference[0]
+	if (None == myReferences)
+		myReferences = new ObjectReference[0]
 	endif
+EndFunction
+
+Function reset()
+	myReferences = new ObjectReference[0]
+	addReferences(References)
 EndFunction
 
 Bool Function hasData()
@@ -13,33 +20,43 @@ Bool Function hasData()
 EndFunction
 
 Int Function getSize()
-	if (None == References)
+	if (None == myReferences)
 		return 0
 	else
-		return References.Length
+		return myReferences.Length
 	endif
 EndFunction
 
 Function addReference(ObjectReference akNewReference)
 	init()
-	References.Add(akNewReference)
+	myReferences.Add(akNewReference)
 EndFunction
 
-Function removeReference(ObjectReference akRemoveReference)
-	if (!hasData())
+Function addReferences(ObjectReference[] akNewReferences)
+	if (!akNewReferences || 0 == akNewReferences.Length)
 		return
 	endif
 	
-	Int iLocation = References.Find(akRemoveReference)
+	init()
+	
+	Int iCounter = 0
+	while (iCounter < akNewReferences.Length)
+		myReferences.Add(akNewReferences[iCounter])
+		iCounter += 1
+	endWhile
+EndFunction
+
+Function removeReference(ObjectReference akRemoveReference)
+	Int iLocation = myReferences.Find(akRemoveReference)
 	if (iLocation >= 0)
-		References.Remove(iLocation)
+		myReferences.Remove(iLocation)
 	endif
 EndFunction
 
-ObjectReference Function getSetting()
+ObjectReference Function getReference()
 	if (!hasData())
 		return None
 	endif
 	
-	return References[Utility.RandomInt(0, getSize() - 1)]
+	return myReferences[Utility.RandomInt(0, getSize() - 1)]
 EndFunction

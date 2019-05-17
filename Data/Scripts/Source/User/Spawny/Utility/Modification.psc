@@ -13,10 +13,12 @@ Function offset(ObjectReference akTargetRef, Coordinate offset, Bool abRelative 
 	Coordinate realOffset = copyCoordinate(offset)
 	if (abRelative)
 		realOffset = rotateCoordinate(realOffset, getTwist(akTargetRef))
+		akTargetRef.MoveTo(akTargetRef, realOffset.x, realOffset.y, realOffset.z)
+	else
+		akTargetRef.SetPosition(realOffset.x, realOffset.y, realOffset.z)
 	endif
 	
 	Spawny:Logger:Modification.logOffset(akTargetRef, offset, abRelative, realOffset)
-	akTargetRef.MoveTo(akTargetRef, realOffset.x, realOffset.y, realOffset.z)
 EndFunction
 
 Function resetPosition(ObjectReference akTargetRef) Global

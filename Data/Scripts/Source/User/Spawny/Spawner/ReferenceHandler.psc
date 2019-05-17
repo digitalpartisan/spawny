@@ -4,11 +4,11 @@ Spawny:Reusable:Form Property ReusableForm Auto Const Mandatory
 Spawny:ReferenceHandler Property ReferenceHandler Auto Const Mandatory
 
 Form Function getForm()
-	return ReusableForm.getSetting()
+	return ReusableForm.getForm()
 EndFunction
 
 ObjectReference Function getReference()
-	return ReferenceHandler.getReference()
+	return ReferenceHandler.MyReference.getReference()
 EndFunction
 
 Function observeReferenceReady()
@@ -26,6 +26,7 @@ Event Spawny:ReferenceHandler.ReferenceReady(Spawny:ReferenceHandler handler, Va
 	
 	stopObservingReferenceReady()
 	spawn()
+	ReferenceHandler.goToComplete()
 EndEvent
 
 Function startupBehavior()
