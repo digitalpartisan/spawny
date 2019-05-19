@@ -1,4 +1,4 @@
-Scriptname Spawny:ChroniclePackageSpawners extends Chronicle:Package:CustomBehavior
+Scriptname Spawny:Spawner:ChronicleCustomization extends Chronicle:Package:CustomBehavior
 
 FormList Property Spawners Auto Const Mandatory
 

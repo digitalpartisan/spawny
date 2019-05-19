@@ -3,17 +3,21 @@ Scriptname Spawny:ReferenceHandler extends Quest
 CustomEvent ReferenceReady
 
 Group ObservationSettings
-	Spawny:ReferenceHandler:DataPoint:Reference Property MyReference Auto Const Mandatory
 	Spawny:ReferenceHandler:DataPoint:Location Property MyLocation Auto Const Mandatory
-	Spawny:ReferenceHandler:DataPoint:Cell Property MyCell = None Auto Const
+	Spawny:ReferenceHandler:DataPoint:Reference Property MyReference Auto Const Mandatory
+	Spawny:ReferenceHandler:DataPoint:Cell Property MyCell Auto Const
 	
 	Spawny:ReferenceHandler:Listener Property MyListener Auto Const Mandatory
 EndGroup
 
 Group StateCheckTimerSettings
 	Int Property TimerID = 1 Auto Const
+	
 	GlobalVariable Property TimerDuration = None Auto Const
 	Float Property DefaultTimerDuration = 30.0 Auto Const
+
+	GlobalVariable Property CellLoadedTimerDuration = None Auto Const
+	Float Property CellLoadedDefaultTimerDuration = 10.0 Auto Const
 EndGroup
 
 String sStateDormant = "Dormant" Const
@@ -21,8 +25,20 @@ String sStateObserving = "Observing" Const
 String sStateReady = "Ready" Const
 String sStateComplete = "Complete" Const
 
-Bool Function isDormant()
-	return false
+Bool Function isDataPointValid(Spawny:ReferenceHandler:DataPoint dataPoint)
+	return dataPoint && dataPoint.isSet()
+EndFunction
+
+Bool Function hasLocationSetting()
+	return isDataPointValid(MyLocation)
+EndFunction
+
+Bool Function hasReferenceSetting()
+	return isDataPointValid(MyReference)
+EndFunction
+
+Bool Function hasCellSetting()
+	return isDataPointValid(MyCell)
 EndFunction
 
 Function goToDormant()
@@ -41,35 +57,50 @@ Function goToComplete()
 	
 EndFunction
 
-Bool Function hasCellSetting()
-	return (MyCell && MyCell.isSet())
+Float Function determineTimerValue(GlobalVariable agvTimerLength, Float afDefaultValue)
+	if (agvTimerLength)
+		return agvTimerLength.GetValue()
+	endif
+	
+	return afDefaultValue
 EndFunction
 
 Float Function getTimerDuration()
-	if (TimerDuration)
-		return TimerDuration.GetValue()
+	if (hasCellSetting() && MyCell.isLoaded())
+		return determineTimerValue(CellLoadedTimerDuration, CellLoadedDefaultTimerDuration)
+	else
+		return determineTimerValue(TimerDuration, DefaultTimerDuration)
 	endif
-	
-	return DefaultTimerDuration
 EndFunction
 
 Function observe()
 	
 EndFunction
 
+Function stateRefresh()
+
+EndFunction
+
 Function stateCheck()
 	
+EndFunction
+
+Function examine()
+	stateRefresh()
+	stateCheck()
 EndFunction
 
 Event OnTimer(Int aiTimerID)
 	if (TimerID == aiTimerID)
 		Spawny:Logger.log(self + " detected a timer event")
-		stateCheck()
+		examine()
 	endif
 EndEvent
 
 Function startCheckTimer()
-	StartTimer(getTimerDuration(), TimerID)
+	Float duration = getTimerDuration()
+	Spawny:Logger.log(self + " started a timer with length " + duration)
+	StartTimer(duration, TimerID)
 EndFunction
 
 Function cancelCheckTimer()
@@ -100,12 +131,8 @@ Auto State Dormant
 		clearDataPoints()
 	EndEvent
 	
-	Function observe()
+	Function examine()
 		goToObserving()
-	EndFunction
-	
-	Function stateCheck()
-		observe()
 	EndFunction
 	
 	Function goToObserving()
@@ -115,12 +142,6 @@ EndState
 
 State Observing
 	Event OnBeginState(String asOldState)
-		if (!MyListener || !MyReference || !MyLocation)
-			Spawny:Logger.log(self + " has invalid configuration")
-			goToDormant()
-			return
-		endif
-		
 		if (!MyListener.isReady())
 			Spawny:Logger.log(self + " does not have installed plugin")
 			goToDormant()
@@ -133,37 +154,30 @@ State Observing
 			return
 		endif
 		
-		Spawny:Logger.log(self + "loaded everything")
+		Spawny:Logger.log(self + " is observing")
 		
-		stateCheck()
+		examine()
 	EndEvent
 	
-	Function stateCheck()
-		Spawny:Logger.log(self + " is checking state")
+	Function stateRefresh()
+		Spawny:Logger.log(self + " refreshing state")
 		
 		if (!MyListener.isReady()); paranoia, but if the plugin is suddenly out of the load order, drop everything for the sake of safety
 			goToDormant()
 		endif
 		
 		if (MyLocation.containsPlayer())
-			if (hasCellSetting())
-				if (MyCell.attemptLoad(MyListener))
-					Spawny:Logger.log(self + " detected its cell is loaded")
-					MyReference.attemptLoad(MyListener)
-				endif
-				
-				if (!MyReference.hasValue())
-					startCheckTimer()
-				endif
-			else
-				MyReference.attemptLoad(MyListener)
-			endif
-			
-			if (MyReference.hasValue())
-				goToReady()
-			endif
+			MyReference.attemptLoad(MyListener)
 		else
 			goToDormant()
+		endif
+	EndFunction
+	
+	Function stateCheck()
+		if (MyReference.hasValue())
+			goToReady()
+		else
+			startCheckTimer()
 		endif
 	EndFunction
 	

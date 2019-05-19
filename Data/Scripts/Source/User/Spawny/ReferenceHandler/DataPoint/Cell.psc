@@ -5,9 +5,5 @@ Cell Function getCell()
 EndFunction
 
 Bool Function isLoaded()
-	if (!hasValue())
-		return false
-	endif
-	
-	return getCell().IsLoaded()
+	return getCell().isLoaded()
 EndFunction

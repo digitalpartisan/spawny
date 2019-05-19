@@ -52,7 +52,7 @@ Function processHandlers(Bool bShutdown = false)
 			if (bShutdown)
 				handler.goToDormant()
 			else
-				handler.stateCheck()
+				handler.examine()
 			endif
 		endif
 		

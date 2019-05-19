@@ -6,25 +6,25 @@ Form[] Property MyForms Auto Const Mandatory
 
 Int iIndex = 0
 
-Function refreshSetting()
-	set(MyForms[iIndex])
+Function refreshForm()
+	setForm(MyForms[iIndex])
 EndFunction
 
 Function rotate()
 	iIndex = getNextIndex(iIndex, MyForms.Length)
-	refreshSetting()
+	refreshForm()
 EndFunction
 
 Bool Function hasForm()
-	return (None != parent.getSetting())
+	return (None != parent.getForm())
 EndFunction
 
-Form Function getSetting()
+Form Function getForm()
 	if (!hasForm())
-		refreshSetting()
+		refreshForm()
 	endif
 	
-	Form fResult = parent.getSetting()
+	Form fResult = parent.getForm()
 	rotate()
 	
 	return fResult

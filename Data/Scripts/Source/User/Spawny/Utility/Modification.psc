@@ -4,56 +4,32 @@ Import Spawny:Utility:Movement
 Import Spawny:Utility:Rotation
 Import Math
 
-Function offset(ObjectReference akTargetRef, Coordinate offset, Bool abRelative = true) Global
-	if (!akTargetRef || !offset)
-		Spawny:Logger:Modification.logCannotOffset(akTargetRef, offset)
-		return
-	endif
-	
-	Coordinate realOffset = copyCoordinate(offset)
-	if (abRelative)
-		realOffset = rotateCoordinate(realOffset, getTwist(akTargetRef))
-		akTargetRef.MoveTo(akTargetRef, realOffset.x, realOffset.y, realOffset.z)
-	else
-		akTargetRef.SetPosition(realOffset.x, realOffset.y, realOffset.z)
-	endif
-	
-	Spawny:Logger:Modification.logOffset(akTargetRef, offset, abRelative, realOffset)
+Function setPosition(ObjectReference akTargetRef, Coordinate position) Global
+	akTargetRef.SetPosition(position.x, position.y, position.z)
 EndFunction
 
-Function resetPosition(ObjectReference akTargetRef) Global
-	if (!akTargetRef)
-		Spawny:Logger:Modification.logCannotResetPosition(akTargetRef)
-		return
-	endif
-	
-	Spawny:Logger:Modification.logResetPosition(akTargetRef)
-	offset(akTargetRef, buildZeroCoordinate(), false)
+Function zeroPosition(ObjectReference akTargetRef) Global
+	setPosition(akTargetRef, buildZeroCoordinate())
 EndFunction
 
-Function rotate(ObjectReference akTargetRef, Twist angles, Bool abRelative = true) Global
-	if (!akTargetRef || !angles)
-		Spawny:Logger:Modification.logCannotRotate(akTargetRef, angles)
-		return
-	endif
-	
-	Twist twistToApply = copyTwist(angles)
-	if (abRelative)
-		twistToApply = addTwists(getTwist(akTargetRef), angles)
-	endif
-	
-	Spawny:Logger:Modification.logRotate(akTargetRef, angles, abRelative, twistToApply)
-	akTargetRef.SetAngle(twistToApply.x, twistToApply.y, twistToApply.z)
+Function augmentPosition(ObjectReference akTargetRef, Coordinate augmentation) Global
+	setPosition(akTargetRef, addCoordinates(getPosition(akTargetRef), augmentation))
 EndFunction
 
-Function resetRotation(ObjectReference akTargetRef) Global
-	if (!akTargetRef)
-		Spawny:Logger:Modification.logCannotResetRotation(akTargetRef)
-		return
-	endif
-	
-	Spawny:Logger:Modification.logResetRotation(akTargetRef)
-	rotate(akTargetRef, buildZeroTwist(), false)
+Function vectorPosition(ObjectReference akTargetRef, Coordinate vector) Global
+	augmentPosition(akTargetRef, rotateCoordinate(vector, getTwist(akTargetRef)))
+EndFunction
+
+Function setRotation(ObjectReference akTargetRef, Twist angles) Global
+	akTargetRef.SetAngle(angles.x, angles.y, angles.z)
+EndFunction
+
+Function zeroRotation(ObjectReference akTargetRef) Global
+	setRotation(akTargetRef, buildZeroTwist())
+EndFunction
+
+Function augmentRotation(ObjectReference akTargetRef, Twist augmentation) Global
+	setRotation(akTargetRef, addTwists(getTwist(akTargetRef), augmentation))
 EndFunction
 
 Coordinate Function rotateCoordinate(Coordinate coordinates, Twist angles) Global

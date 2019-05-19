@@ -6,25 +6,25 @@ ObjectReference[] Property MyReferences Auto Const Mandatory
 
 Int iIndex = 0
 
-Function refreshSetting()
-	set(MyReferences[iIndex])
+Function refreshReference()
+	setReference(MyReferences[iIndex])
 EndFunction
 
 Function rotate()
 	iIndex = getNextIndex(iIndex, MyReferences.Length)
-	refreshSetting()
+	refreshReference()
 EndFunction
 
 Bool Function hasReference()
-	return (None != parent.getSetting())
+	return (None != parent.getReference())
 EndFunction
 
-ObjectReference Function getSetting()
+ObjectReference Function getReference()
 	if (!hasReference())
-		refreshSetting()
+		refreshReference()
 	endif
 	
-	ObjectReference kResult = parent.getSetting()
+	ObjectReference kResult = parent.getReference()
 	rotate()
 	
 	return kResult
