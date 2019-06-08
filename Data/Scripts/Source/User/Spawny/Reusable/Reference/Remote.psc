@@ -1,4 +1,6 @@
 Scriptname Spawny:Reusable:Reference:Remote extends Spawny:Reusable:Reference
+{This script has been included for reference value since it is not likely to be very useful except in the most coincidental of cases.
+Generally, the functionality this script might accomplish is better handled by using a Spawny:ReferenceHandler object.}
 
 Import InjectTec:HexidecimalLogic
 

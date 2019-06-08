@@ -1,11 +1,17 @@
 Scriptname Spawny:Spawner extends Quest Hidden
+{This script defines the basic functionality of a Spawner object.
+Reference child scripts in the Spawny:Spawner namespace for implementation details and possible use cases.}
 
 Import Spawny:Utility:Placement
 
 Options Property PlacementOptions = None Auto Const
+{Useful for tweaking the state of the placed object.  No effect is had for a None value.}
 Spawny:Modifier Property Modifier = None Auto Const
+{Useful for modifying the placed object after placement.  No effect is had for a None value.}
 String Property NodeName = "" Auto Const
+{The NIF node at which to place the object.  Only effective when a value is specified and the named node exists on the target reference's nif.}
 Bool Property Attach = false Auto Const
+{Whether or not to attach the spawned reference to the node.  Has no effect unless the conditions on NodeName are met.}
 
 ObjectReference spawnedObject = None
 

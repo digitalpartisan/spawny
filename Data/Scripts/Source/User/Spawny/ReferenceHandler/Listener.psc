@@ -1,4 +1,6 @@
 Scriptname Spawny:ReferenceHandler:Listener extends Quest
+{Use this script to implement a listener on a Quest record which will start and stop with the quest object itself.
+Each of these records assumes the presence of a particular plugin to load the records from using the Spawny:ReferenceHandler records stored in the Handlers FormList.}
 
 InjectTec:Plugin Property MyPlugin Auto Const Mandatory
 FormList Property Handlers Auto Const Mandatory
@@ -75,6 +77,7 @@ EndEvent
 Event OnQuestInit()
 	if (isReady())
 		observeEvents()
+		processHandlers()
 	else
 		Stop()
 	endif

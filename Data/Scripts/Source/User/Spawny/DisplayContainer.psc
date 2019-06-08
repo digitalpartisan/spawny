@@ -1,4 +1,5 @@
 Scriptname Spawny:DisplayContainer extends ObjectReference
+{A very basic script used to handle display of forms added to a container.  Requires a nif with the appropriately named nodes and a container with an appropriate contents filter.}
 
 Import Spawny:Utility:Placement
 

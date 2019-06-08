@@ -1,4 +1,5 @@
 Scriptname Spawny:Reusable:Form:Remote extends Spawny:Reusable:Form
+{This reusable form loads a Form record from a third-party plugin.}
 
 Import InjectTec:HexidecimalLogic
 
