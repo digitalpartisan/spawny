@@ -1,4 +1,5 @@
 Scriptname Spawny:Utility:Rotation Hidden Const
+{Provides the Twist struct to describe a rotation of an ObjectReference as well as the primitive mathematics required to manipulate Twist values needed for complicated movement and rotation.}
 
 Struct Twist
 	Float x = 0.0

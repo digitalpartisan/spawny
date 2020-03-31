@@ -16,32 +16,43 @@ Bool Property Attach = false Auto Const
 ObjectReference spawnedObject = None
 
 ObjectReference Function getSpawnedReference()
+{Returns the ObjectReference spawned by this spawner.  Returns None when no such ObjectReference exists.}
 	return spawnedObject
 EndFunction
 
 Bool Function hasSpawnedReference()
+{True if this spawner has a handle to a reference (which is presumed to be the reference spawned by this spawner) and false otherwise (which would indicate that no reference has been spawned.)}
 	return None != getSpawnedReference()
 EndFunction
 
 Function setSpawnedReference(ObjectReference akNewValue)
+{Used in order to allow child scripts access to the variable they would otherwise be unable to alter.}
 	spawnedObject = akNewValue
 EndFunction
 
 Function clearSpawnedReference()
+{Resets the variable used to point to the spawned reference.
+Called by internal logic as a helper method.
+Avoid using this unless you're sure of what you're doing.}
 	setSpawnedReference(None)
 EndFunction
 
 Form Function getForm()
+{Returns the form the spawner is expected to spawn.
+See child scripts for possible implementation details.}
 	Spawny:Logger.logBehaviorUndefined(self, "getForm")
 	return None
 EndFunction
 
 ObjectReference Function getReference()
+{Returns the target reference which is used as the location at which to spawn the given form.
+See child scripts for possible implementation details.}
 	Spawny:Logger.logBehaviorUndefined(self, "getReference")
 	return None
 EndFunction
 
 ObjectReference Function spawnBehavior()
+{Performs the actual spawning and returns the newly spawned ObjectReference.}
 	if ("" == NodeName)
 		return PlaceOptions(getForm(), getReference(), PlacementOptions)
 	else
@@ -50,6 +61,9 @@ ObjectReference Function spawnBehavior()
 EndFunction
 
 Function spawn()
+{Causes the spawner to spawn the specified form at the specified target reference.
+Do not call this directly unless you're sure of what you're doing.
+Use of Start() on the quest record is a much better way to invoke this behavior.}
 	Spawny:Logger:Spawner.logSpawning(self)
 	setSpawnedReference(spawnBehavior())
 	
@@ -59,6 +73,9 @@ Function spawn()
 EndFunction
 
 Function despawn()
+{Causes the spawner to disable and delete the spawned reference.
+Do not call this directory unless you're sure of what you're doing.
+Use of Stop() on the quest record is a much better way to invoke this behavior.}
 	ObjectReference myReference = getSpawnedReference()
 	if (myReference)
 		clearSpawnedReference()
@@ -68,10 +85,12 @@ Function despawn()
 EndFunction
 
 Function startupBehavior()
+{See cautionary note on spawn().  Prefer the use of Start() on the quest record to calling this method.}
 	spawn()
 EndFunction
 
 Function shutdownBehavior()
+{See cautionary note on despawn().  Prefer the use of Stop() on the quest record to calling this method.}
 	despawn()
 EndFunction
 

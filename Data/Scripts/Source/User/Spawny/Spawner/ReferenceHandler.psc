@@ -1,5 +1,6 @@
 Scriptname Spawny:Spawner:ReferenceHandler extends Spawny:Spawner
-{This spawner uses a Spawny:ReferenceHandler to get a handle to an ObjectReference record contained in a third-party plugin.}
+{This spawner uses a Spawny:ReferenceHandler to get a handle to an ObjectReference record contained in a third-party plugin.
+Uses a Spawny:Reusable:Form record to load the form to spawn.}
 
 Spawny:Reusable:Form Property ReusableForm Auto Const Mandatory
 {What form to spawn when the reference indicated by ReferenceHandler is available.}
@@ -33,5 +34,5 @@ EndEvent
 
 Function startupBehavior()
 	observeReferenceReady()
-	ReferenceHandler.observe()
+	ReferenceHandler.examine()
 EndFunction

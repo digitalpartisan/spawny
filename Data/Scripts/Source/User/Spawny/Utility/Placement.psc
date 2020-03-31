@@ -1,4 +1,6 @@
 Scriptname Spawny:Utility:Placement Hidden Const
+{Contains all basic and vital spawning behavior as well as options to customize the placement of the form record at its target.
+Reference the parameters of the various methods herein to determine which is best suited to your purpose.}
 
 Struct Options
 	Bool forcePersist = false

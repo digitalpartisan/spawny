@@ -1,4 +1,5 @@
 Scriptname Spawny:Utility:Movement Hidden Const
+{Provides the Coordinate struct used to denote and alter ObjectReference positions as well as the logic in methods needed to manipulate Coordinate values in basic ways required to support more complicated calculations.}
 
 Struct Coordinate
 	Float x = 0.0
