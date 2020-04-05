@@ -7,7 +7,7 @@ Struct Twist
 	float z = 0.0
 EndStruct
 
-Twist Function buildTwist(Float xAngle = 0.0, Float yAngle = 0.0, Float zANgle = 0.0) Global
+Twist Function buildTwist(Float xAngle = 0.0, Float yAngle = 0.0, Float zAngle = 0.0) Global
 	Twist newTwist = new Twist
 	newTwist.x = xAngle
 	newTwist.y = yAngle

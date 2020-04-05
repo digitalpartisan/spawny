@@ -4,5 +4,5 @@ Scriptname Spawny:Reusable:Form:Random extends Spawny:Reusable:Form
 FormList Property MyForms = None Auto Const Mandatory
 
 Form Function getForm()
-	return Jiffy:Utility.randomFromList(MyForms)
+	return Jiffy:Utility:FormList.random(MyForms)
 EndFunction

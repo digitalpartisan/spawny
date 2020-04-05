@@ -4,5 +4,5 @@ Scriptname Spawny:Reusable:Reference:Random extends Spawny:Reusable:Reference
 ObjectReference[] Property References = None Auto Const Mandatory
 
 ObjectReference Function getReference()
-	return Jiffy:Utility.randomReference(References)
+	return Jiffy:Utility:Array.random(References as Var[]) as ObjectReference
 EndFunction

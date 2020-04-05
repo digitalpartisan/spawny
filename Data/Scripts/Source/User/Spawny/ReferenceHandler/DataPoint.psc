@@ -1,8 +1,7 @@
-Scriptname Spawny:ReferenceHandler:DataPoint extends Quest Hidden
+Scriptname Spawny:ReferenceHandler:DataPoint extends Quest Hidden 
 
-Import InjectTec:HexidecimalLogic
+Import InjectTec:Utility:HexidecimalLogic
 
-Int Property ID = 0 Auto Const
 DigitSet Property Digits = None Auto Const
 
 Form myValue = None
@@ -24,19 +23,7 @@ Function clearValue()
 EndFunction
 
 Bool Function isSet()
-	return 0 < ID || Digits
-EndFunction
-
-Int Function getRecordID()
-	if (!isSet())
-		return 0
-	endif
-
-	if (Digits)
-		return getDigitSetValue(Digits)
-	endif
-	
-	return ID
+	return Digits
 EndFunction
 
 Bool Function attemptLoad(Spawny:ReferenceHandler:Listener listener)
@@ -47,7 +34,7 @@ Bool Function attemptLoad(Spawny:ReferenceHandler:Listener listener)
 		return false
 	endif
 	
-	setValue(plugin.lookupForm(getRecordID()))
+	setValue(plugin.lookupWithDigits(Digits))
 	
 	return hasValue()
 EndFunction
