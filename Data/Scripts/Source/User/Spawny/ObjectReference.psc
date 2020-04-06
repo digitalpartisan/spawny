@@ -6,7 +6,7 @@ Struct ChildPlacement
 	ObjectReference reference = None
 EndStruct
 
-ChildPlacement[] Property Children Auto Const Mandatory
+ChildPlacement[] Property Children Auto Mandatory
 Bool Property PersistThroughUnload = false Auto Const
 
 String sStateDespawned = "Despawned" Const

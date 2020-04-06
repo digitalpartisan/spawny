@@ -2,6 +2,8 @@ Scriptname Spawny:Spawner extends Quest Hidden
 {This script defines the basic functionality of a Spawner object.
 Reference child scripts in the Spawny:Spawner namespace for implementation details and possible use cases.}
 
+CustomEvent Spawned
+
 Import Spawny:Utility:Placement
 
 Options Property PlacementOptions = None Auto Const
@@ -70,6 +72,8 @@ Use of Start() on the quest record is a much better way to invoke this behavior.
 	if (hasSpawnedReference() && Modifier)
 		Modifier.apply(getSpawnedReference())
 	endif
+	
+	SendCustomEvent("Spawned")
 EndFunction
 
 Function despawn()
