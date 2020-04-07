@@ -7,6 +7,7 @@ Struct ChildPlacement
 EndStruct
 
 ChildPlacement[] Property Children Auto Mandatory
+{If this array were labeled Const, the spawned references would not be persisted in the individual structs after a game load.}
 Bool Property PersistThroughUnload = false Auto Const
 
 String sStateDespawned = "Despawned" Const
