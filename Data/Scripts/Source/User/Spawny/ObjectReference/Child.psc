@@ -30,11 +30,11 @@ ObjectReference Function spawnReference(Spawny:ObjectReference akTargetRef, Stri
 	endif
 	
 	if (OffsetValue)
-		augmentPosition(newReference, rotateCoordinate(OffsetValue, getTwist(akTargetRef)))
+		setPosition(newReference, augmentPosition(newReference, rotateCoordinate(OffsetValue, getTwist(akTargetRef))))
 	endif
 	
 	if (RotationValue)
-		augmentRotation(newReference, RotationValue)
+		setRotation(newReference, augmentRotation(newReference, RotationValue))
 	endif
 	
 	if (MakeStatic)

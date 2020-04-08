@@ -6,42 +6,16 @@ Import Spawny:Utility:Movement
 Import Spawny:Utility:Rotation
 Import Math
 
-Function setPosition(ObjectReference akTargetRef, Coordinate position) Global
+Bool Function setPosition(ObjectReference akTargetRef, Coordinate position) Global
 {Sets the absolute position of the given ObjectReference to the given coordinates.}
 	akTargetRef.SetPosition(position.x, position.y, position.z)
+	return positionEquals(akTargetRef, position)
 EndFunction
 
-Function zeroPosition(ObjectReference akTargetRef) Global
-{Moves the given ObjectReference to the center of the cell or worldspace.}
-	setPosition(akTargetRef, buildZeroCoordinate())
-EndFunction
-
-Function augmentPosition(ObjectReference akTargetRef, Coordinate augmentation) Global
-{Moves the position of the given ObjectReference to its current position plus the values contained in coordinate.  That is, this method performs a relative position adjustment.}
-	setPosition(akTargetRef, addCoordinates(getPosition(akTargetRef), augmentation))
-EndFunction
-
-Function vectorPosition(ObjectReference akTargetRef, Coordinate vector) Global
-{Vectors the ObjectReference by the values contained in vector.
-That is, the position of akTargetRef is adjusted by the amount indicated in vector as if the current position and rotation of akTargetRef are both zero.
-To phrase that in a more helpful way, the values in vector are applied to akTargetRef, but in the coordinate system located at akTargetRef's origin with its axis rotated to match akTargetRef's rotation.
-See rotateCoordinate() for details on this process.}
-	augmentPosition(akTargetRef, rotateCoordinate(vector, getTwist(akTargetRef)))
-EndFunction
-
-Function setRotation(ObjectReference akTargetRef, Twist angles) Global
+Bool Function setRotation(ObjectReference akTargetRef, Twist angles) Global
 {Sets the absolute rotation of akTargetRef to the values specified by angles.}
 	akTargetRef.SetAngle(angles.x, angles.y, angles.z)
-EndFunction
-
-Function zeroRotation(ObjectReference akTargetRef) Global
-{Sets the absolute rotation of akTargetRef around every axis to zero.}
-	setRotation(akTargetRef, buildZeroTwist())
-EndFunction
-
-Function augmentRotation(ObjectReference akTargetRef, Twist augmentation) Global
-{Augments akTargetRef's current rotation by the values in augmentation.}
-	setRotation(akTargetRef, addTwists(getTwist(akTargetRef), augmentation))
+	return rotationEquals(akTargetRef, angles)
 EndFunction
 
 Coordinate Function rotateCoordinate(Coordinate coordinates, Twist angles) Global

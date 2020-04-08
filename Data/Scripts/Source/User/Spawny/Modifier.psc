@@ -33,37 +33,41 @@ Group BehaviorSettings
 	{When set to true, the reference in question will be enabled when this modifier is applied.}
 EndGroup
 
-Function applyPosition(ObjectReference akTargetRef)
+Coordinate Function calculatePosition(ObjectReference akTargetRef)
 	if (!akTargetRef)
-		return
+		return None
 	endif
 	
 	if (ZeroPosition)
-		zeroPosition(akTargetRef)
+		return buildZeroCoordinate()
 	elseif (Position)
 		if (PositionIsAbsolute)
-			setPosition(akTargetRef, Position)
+			return Position
 		elseif (PositionIsAugment)
-			augmentPosition(akTargetRef, Position)
+			return augmentPosition(akTargetRef, Position)
 		else
-			vectorPosition(akTargetRef, Position)
+			return vectorPosition(akTargetRef, Position)
 		endif
+	else
+		return None
 	endif
 EndFunction
 
-Function applyRotation(ObjectReference akTargetRef)
+Twist Function calculateRotation(ObjectReference akTargetRef)
 	if (!akTargetRef)
-		return
+		return None
 	endif
 	
 	if (ZeroRotation)
-		zeroRotation(akTargetRef)
+		return buildZeroTwist()
 	elseif (Angles)
 		if (AngleIsAbsolute)
-			setRotation(akTargetRef, Angles)
+			return Angles
 		else
-			augmentRotation(akTargetRef, Angles)
+			return augmentRotation(akTargetRef, Angles)
 		endif
+	else
+		return None
 	endif
 EndFunction
 
@@ -74,9 +78,13 @@ Function apply(ObjectReference akTargetRef)
 	endif
 	
 	Spawny:Logger:Modification.logModifierApply(self, akTargetRef)
+	Spawny:ObjectReference spawnyObject = akTargetRef as Spawny:ObjectReference
 	
-	applyPosition(akTargetRef)
-	applyRotation(akTargetRef)
+	Coordinate newPosition = calculatePosition(akTargetRef)
+	!setPosition(akTargetRef, newPosition) && spawnyObject && spawnyObject.adjustPosition(newPosition)
+	
+	Twist newRotation = calculateRotation(akTargetRef)
+	!setRotation(akTargetRef, newRotation) && spawnyObject && spawnyObject.adjustRotation(newRotation)
 	
 	if (ForceStatic)
 		makeStatic(akTargetRef)

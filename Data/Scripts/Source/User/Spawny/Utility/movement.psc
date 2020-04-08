@@ -51,3 +51,27 @@ Coordinate Function subtractCoordinates(Coordinate lefthand, Coordinate righthan
 	
 	return buildCoordinate(lefthand.x - righthand.x, lefthand.y - righthand.y, lefthand.z - righthand.z)
 EndFunction
+
+Coordinate Function augmentPosition(ObjectReference akTargetRef, Coordinate augmentation) Global
+	return addCoordinates(getPosition(akTargetRef), augmentation)
+EndFunction
+
+Coordinate Function vectorPosition(ObjectReference akTargetRef, Coordinate vector) Global
+	return augmentPosition(akTargetRef, Spawny:Utility:Modification.rotateCoordinate(vector, Spawny:Utility:Rotation.getTwist(akTargetRef)))
+EndFunction
+
+Bool Function areCoordinatesEqual(Coordinate left, Coordinate right) Global
+	if (!left || !right)
+		return true ; only return false if there is a definitive inequality
+	endif
+	
+	return ( left.x == right.x && left.y == right.y && left.z == right.z )
+EndFunction
+
+Bool Function positionEquals(ObjectReference akTargetRef, Coordinate position) Global
+	if (!akTargetRef || !position)
+		return true ; only return false if there is a definitive inequality
+	endif
+	
+	return areCoordinatesEqual(getPosition(akTargetRef), position)
+EndFunction

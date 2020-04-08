@@ -13,6 +13,17 @@ Bool Property PersistThroughUnload = false Auto Const
 String sStateDespawned = "Despawned" Const
 String sStateSpawned = "Spawned" Const
 
+Spawny:Utility:Movement:Coordinate intendedPosition = None
+Spawny:Utility:Rotation:Twist intendedRotation = None
+
+Function adjustPosition(Spawny:Utility:Movement:Coordinate value)
+	intendedPosition = value
+EndFunction
+
+Function adjustRotation(Spawny:Utility:Rotation:Twist value)
+	intendedRotation = value
+EndFunction
+
 Function goToDespawned()
 	GoToState(sStateDespawned)
 EndFunction
@@ -71,6 +82,10 @@ Function spawnChild(ChildPlacement childToSpawn)
 
 EndFunction
 
+Function spawn()
+	
+EndFunction
+
 Event ObjectReference.OnContainerChanged(ObjectReference akSender, ObjectReference akNewContainer, ObjectReference akOldContainer)
 	
 EndEvent
@@ -97,7 +112,7 @@ Auto State Despawned
 	Function Enable(Bool abFadeIn = false)
 		Spawny:Logger:ObjectReference.logEnabled(self)
 		parent.Enable(abFadeIn)
-		Is3DLoaded() && goToSpawned()
+		(PersistThroughUnload || Is3DLoaded()) && goToSpawned()
 	EndFunction
 	
 	Event OnInit()
@@ -113,6 +128,42 @@ EndState
 
 State Spawned
 	Event OnBeginState(String asOldState)
+		spawn()
+	EndEvent
+	
+	Event OnLoad()
+		Spawny:Logger:ObjectReference.logLoaded(self)
+		
+		Bool bNeedsSpawn = false
+	
+		if (intendedPosition)
+			Spawny:Utility:Modification.setPosition(self, intendedPosition)
+			intendedPosition = None
+			bNeedsSpawn = true
+		endif
+		
+		if (intendedRotation)
+			Spawny:Utility:Modification.setRotation(self, intendedRotation)
+			intendedRotation = None
+			bNeedsSpawn = true
+		endif
+		
+		if (bNeedsSpawn)
+			spawn()
+		endif
+	EndEvent
+	
+	Function spawnChild(ChildPlacement childToSpawn)
+		if (!childToSpawn || !childToSpawn.spawnMe || !childToSpawn.name)
+			return
+		endif
+		
+		clearChild(childToSpawn)
+		childToSpawn.reference = childToSpawn.spawnMe.spawnReference(self, childToSpawn.name)
+		observeContainerChange(childToSpawn)
+	EndFunction
+	
+	Function spawn()
 		if (!Children || 0 == Children.Length)
 			return
 		endif
@@ -124,16 +175,6 @@ State Spawned
 			spawnChild(Children[iCounter])
 			iCounter += 1
 		endWhile
-	EndEvent
-	
-	Function spawnChild(ChildPlacement childToSpawn)
-		if (!childToSpawn || !childToSpawn.spawnMe || !childToSpawn.name)
-			return
-		endif
-		
-		clearChild(childToSpawn)
-		childToSpawn.reference = childToSpawn.spawnMe.spawnReference(self, childToSpawn.name)
-		observeContainerChange(childToSpawn)
 	EndFunction
 	
 	Function observeContainerChange(ChildPlacement childToObserve)

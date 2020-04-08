@@ -43,3 +43,23 @@ EndFunction
 Twist Function subtractTwists(Twist lefthand, Twist righthand) Global
 	return buildTwist(lefthand.x - righthand.x, lefthand.y - righthand.y, lefthand.z - righthand.z)
 EndFunction
+
+Twist Function augmentRotation(ObjectReference akTargetRef, Twist augmentation) Global
+	return addTwists(getTwist(akTargetRef), augmentation)
+EndFunction
+
+Bool Function areAnglesEqual(Twist left, Twist right) Global
+	if (!left || !right)
+		return true ; only return false if there is a definitive inequality
+	endif
+
+	return ( left.x == right.x && left.y == right.y && left.z == right.z )
+EndFunction
+
+Bool Function rotationEquals(ObjectReference akTargetRef, Twist values) Global
+	if (!akTargetRef || !values)
+		return true ; only return false if there is a definitive inequality
+	endif
+	
+	return areAnglesEqual(getTwist(akTargetRef), values)
+EndFunction
