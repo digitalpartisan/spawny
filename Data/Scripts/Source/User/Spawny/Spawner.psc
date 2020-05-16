@@ -14,6 +14,8 @@ String Property NodeName = "" Auto Const
 {The NIF node at which to place the object.  Only effective when a value is specified and the named node exists on the target reference's nif.}
 Bool Property Attach = false Auto Const
 {Whether or not to attach the spawned reference to the node.  Has no effect unless the conditions on NodeName are met.}
+Spawny:Adjuster Property Adjuster Auto Const
+{The object responsible for adjusting mis-placed or mis-rotated references.  Optional if this spawner is not subject to the conditions that cause this.}
 
 ObjectReference spawnedObject = None
 
@@ -70,7 +72,7 @@ Use of Start() on the quest record is a much better way to invoke this behavior.
 	setSpawnedReference(spawnBehavior())
 	
 	if (hasSpawnedReference() && Modifier)
-		Modifier.apply(getSpawnedReference())
+		Modifier.apply(getSpawnedReference(), Adjuster)
 	endif
 	
 	SendCustomEvent("Spawned")
@@ -107,3 +109,38 @@ Event OnQuestShutdown()
 	Spawny:Logger:Spawner.logShutdown(self)
 	shutdownBehavior()
 EndEvent
+
+Function handleBulk(Spawny:Spawner[] spawners, Bool bStart = true) Global
+	if (!spawners || !spawners.Length)
+		return
+	endif
+	
+	Int iCounter = 0
+	Spawny:Spawner target = None
+	while (iCounter < spawners.Length)
+		target = spawners[iCounter] as Spawny:Spawner
+		if (bStart)
+			target && target.Start()
+		else
+			target && target.Stop()
+		endif
+		
+		iCounter += 1
+	endWhile
+EndFunction
+
+Function startBulk(Spawny:Spawner[] spawners) Global
+	handleBulk(spawners)
+EndFunction
+
+Function stopBulk(Spawny:Spawner[] spawners) Global
+	handleBulk(spawners, false)
+EndFunction
+
+Function startList(FormList spawners) Global
+	handleBulk(Jiffy:Utility:FormList.toArray(spawners) as Spawny:Spawner[])
+EndFunction
+
+Function stopList(FormList spawners) Global
+	handleBulk(Jiffy:Utility:FormList.toArray(spawners) as Spawny:Spawner[], false)
+EndFunction

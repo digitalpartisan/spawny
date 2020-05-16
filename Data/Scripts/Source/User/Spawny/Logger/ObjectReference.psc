@@ -53,3 +53,7 @@ EndFunction
 Bool Function logDespawning(Spawny:ObjectReference akObject) Global
 	return log(akObject + " is despawning")
 EndFunction
+
+Bool Function logFailureToSpawn(Spawny:ObjectReference akObject, Spawny:ObjectReference:ChildPlacement failedPlacement) Global
+	return error(akObject + " failed to spawn " + failedPlacement)
+EndFunction

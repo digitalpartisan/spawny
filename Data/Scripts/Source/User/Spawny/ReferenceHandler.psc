@@ -98,9 +98,7 @@ Function stateCheck()
 EndFunction
 
 Function examine()
-{When called, forces a state update of the various Spawny:ReferenceHandler:DataPoint properties on this script and then determines if the targetted reference can be loaded.}
-	stateRefresh()
-	stateCheck()
+	
 EndFunction
 
 Event OnTimer(Int aiTimerID)
@@ -194,6 +192,13 @@ State Observing
 		else
 			startCheckTimer()
 		endif
+	EndFunction
+	
+	Function examine()
+	{When called, forces a state update of the various Spawny:ReferenceHandler:DataPoint properties on this script and then determines if the targetted reference can be loaded.}
+		Spawny:Logger.log(self + " is examining")
+		stateRefresh()
+		stateCheck()
 	EndFunction
 	
 	Function goToDormant()

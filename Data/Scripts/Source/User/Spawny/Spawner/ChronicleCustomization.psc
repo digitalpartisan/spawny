@@ -4,38 +4,37 @@ Also starts any and all spawners upon a game load event to allow for additional 
 Shuts down spawners when the package is uninstalled.
 Ditto for a list of listeners.}
 
+InjectTec:Plugin Property MyPlugin Auto Const Mandatory
+{The plugin required to load the object references observed by the Listener}
 FormList Property Spawners Auto Const Mandatory
 {A list of Spawny:Spawner records for this package's behavior to handle.}
-FormList Property Listeners = None Auto Const
+Spawny:ReferenceHandler:Listener Property Listener Auto Const Mandatory
 {A list of Spawny:ReferenceHandler:Listener records for this package's behavior to handle.}
 
-Function handleQuests(FormList aflQuests, Bool bStart = true)
-	if (!aflQuests || !aflQuests.GetSize())
-		return
-	endif
-	
-	Int iCounter = 0
-	Int iSize = aflQuests.GetSize()
-	while (iCounter < iSize)
-		Quest targetQuest = aflQuests.GetAt(iCounter) as Quest
-		if (targetQuest)
-			if (bStart)
-				targetQuest.Start()
-			else
-				targetQuest.Stop()
-			endif
-		endif
-		
-		iCounter += 1
-	endWhile
+Bool Function meetsPluginRequirement()
+	return MyPlugin && MyPlugin.isInstalled()
 EndFunction
 
 Function handle(Bool bStart = true)
-	handleQuests(Spawners, bStart)
-	handleQuests(Listeners, bStart)
+	if (!meetsPluginRequirement())
+		return
+	endif
+	
+	if (bStart)
+		Spawners && Spawny:Spawner.startList(Spawners)
+		Listener && Listener.Start()
+	else
+		Spawners && Spawny:Spawner.stopList(Spawners)
+		Listener && Listener.Stop()
+	endif
 EndFunction
 
 Bool Function installBehavior()
+	handle()
+	return true
+EndFunction
+
+Bool Function postloadBehavior()
 	handle()
 	return true
 EndFunction

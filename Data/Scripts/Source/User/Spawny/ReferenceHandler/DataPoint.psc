@@ -23,7 +23,7 @@ Function clearValue()
 EndFunction
 
 Bool Function isSet()
-	return Digits
+	return Digits as Bool
 EndFunction
 
 Bool Function attemptLoad(Spawny:ReferenceHandler:Listener listener)

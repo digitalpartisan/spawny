@@ -13,17 +13,6 @@ Bool Property PersistThroughUnload = false Auto Const
 String sStateDespawned = "Despawned" Const
 String sStateSpawned = "Spawned" Const
 
-Spawny:Utility:Movement:Coordinate intendedPosition = None
-Spawny:Utility:Rotation:Twist intendedRotation = None
-
-Function adjustPosition(Spawny:Utility:Movement:Coordinate value)
-	intendedPosition = value
-EndFunction
-
-Function adjustRotation(Spawny:Utility:Rotation:Twist value)
-	intendedRotation = value
-EndFunction
-
 Function goToDespawned()
 	GoToState(sStateDespawned)
 EndFunction
@@ -110,47 +99,25 @@ Auto State Despawned
 	EndEvent
 	
 	Function Enable(Bool abFadeIn = false)
-		Spawny:Logger:ObjectReference.logEnabled(self)
+		Spawny:Logger:ObjectReference.log(self + " enabled while despawned")
 		parent.Enable(abFadeIn)
 		(PersistThroughUnload || Is3DLoaded()) && goToSpawned()
 	EndFunction
 	
 	Event OnInit()
-		Spawny:Logger:ObjectReference.logInitialized(self)
-		PersistThroughUnload && IsEnabled() && goToSpawned()
+		Spawny:Logger:ObjectReference.log(self + " initialized while despawned")
+		(PersistThroughUnload || IsEnabled()) && goToSpawned()
 	EndEvent
 	
 	Event OnLoad()
-		Spawny:Logger:ObjectReference.logLoaded(self)
-		!PersistThroughUnload && IsEnabled() && goToSpawned()
+		Spawny:Logger:ObjectReference.log(self + " loaded while despawned")
+		(!PersistThroughUnload || IsEnabled()) && goToSpawned()
 	EndEvent
 EndState
 
 State Spawned
 	Event OnBeginState(String asOldState)
 		spawn()
-	EndEvent
-	
-	Event OnLoad()
-		Spawny:Logger:ObjectReference.logLoaded(self)
-		
-		Bool bNeedsSpawn = false
-	
-		if (intendedPosition)
-			Spawny:Utility:Modification.setPosition(self, intendedPosition)
-			intendedPosition = None
-			bNeedsSpawn = true
-		endif
-		
-		if (intendedRotation)
-			Spawny:Utility:Modification.setRotation(self, intendedRotation)
-			intendedRotation = None
-			bNeedsSpawn = true
-		endif
-		
-		if (bNeedsSpawn)
-			spawn()
-		endif
 	EndEvent
 	
 	Function spawnChild(ChildPlacement childToSpawn)
@@ -160,7 +127,11 @@ State Spawned
 		
 		clearChild(childToSpawn)
 		childToSpawn.reference = childToSpawn.spawnMe.spawnReference(self, childToSpawn.name)
-		observeContainerChange(childToSpawn)
+		if (childToSpawn.reference)
+			observeContainerChange(childToSpawn)
+		else
+			Spawny:Logger:ObjectReference.logFailureToSpawn(self, childToSpawn)
+		endif
 	EndFunction
 	
 	Function spawn()
