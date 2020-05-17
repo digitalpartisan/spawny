@@ -14,7 +14,7 @@ String Property NodeName = "" Auto Const
 {The NIF node at which to place the object.  Only effective when a value is specified and the named node exists on the target reference's nif.}
 Bool Property Attach = false Auto Const
 {Whether or not to attach the spawned reference to the node.  Has no effect unless the conditions on NodeName are met.}
-Spawny:Adjuster Property Adjuster Auto Const
+Spawny:Utility:Modification:AdjustmentHandler Property Adjuster Auto Const
 {The object responsible for adjusting mis-placed or mis-rotated references.  Optional if this spawner is not subject to the conditions that cause this.}
 
 ObjectReference spawnedObject = None
@@ -70,11 +70,7 @@ Do not call this directly unless you're sure of what you're doing.
 Use of Start() on the quest record is a much better way to invoke this behavior.}
 	Spawny:Logger:Spawner.logSpawning(self)
 	setSpawnedReference(spawnBehavior())
-	
-	if (hasSpawnedReference() && Modifier)
-		Modifier.apply(getSpawnedReference(), Adjuster)
-	endif
-	
+	hasSpawnedReference() && Modifier && Modifier.apply(getSpawnedReference(), Adjuster)
 	SendCustomEvent("Spawned")
 EndFunction
 

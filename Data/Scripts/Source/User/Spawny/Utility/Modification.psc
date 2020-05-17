@@ -8,12 +8,20 @@ Import Math
 
 Bool Function setPosition(ObjectReference akTargetRef, Coordinate position) Global
 {Sets the absolute position of the given ObjectReference to the given coordinates.}
+	if (!akTargetRef || !position)
+		return true ; only return false if a measurable failure occurred
+	endif
+	
 	akTargetRef.SetPosition(position.x, position.y, position.z)
 	return positionEquals(akTargetRef, position)
 EndFunction
 
 Bool Function setRotation(ObjectReference akTargetRef, Twist angles) Global
 {Sets the absolute rotation of akTargetRef to the values specified by angles.}
+	if (!akTargetRef || !angles)
+		return true ; only return false if a measurable failure occurred
+	endif
+
 	akTargetRef.SetAngle(angles.x, angles.y, angles.z)
 	return rotationEquals(akTargetRef, angles)
 EndFunction
@@ -59,17 +67,13 @@ Function toggleStatic(ObjectReference akTargetRef, Bool abMakeStatic = true) Glo
 		return
 	endif
 	
-	Bool bBlockActivation = false
-	Bool bHideActivateText = false
 	Int iMotionType = akTargetRef.Motion_Dynamic
 	if (abMakeStatic)
-		bBlockActivation = true
-		bHideActivateText = true
 		iMotionType = akTargetRef.Motion_Keyframed
 	endif
 	
-	akTargetRef.BlockActivation(bBlockActivation, bHideActivateText)
-	akTargetRef.SetMotionType(iMotionType)
+	akTargetRef.BlockActivation(abMakeStatic, abMakeStatic)
+	akTargetRef.SetMotionType(iMotionType, !abMakeStatic)
 EndFunction
 
 Function makeStatic(ObjectReference akTargetRef) Global

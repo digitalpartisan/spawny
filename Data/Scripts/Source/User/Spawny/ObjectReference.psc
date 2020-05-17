@@ -8,13 +8,20 @@ EndStruct
 
 ChildPlacement[] Property Children Auto Mandatory
 {If this array were labeled Const, the spawned references would not be persisted in the individual structs after a game load.}
-Bool Property PersistThroughUnload = false Auto Const
+Bool Property ChildrenMustAlwaysExist = false Auto Const
 
 String sStateDespawned = "Despawned" Const
+String sStateSpawning = "Spawning" Const
 String sStateSpawned = "Spawned" Const
+
+Bool bRespawn = false
 
 Function goToDespawned()
 	GoToState(sStateDespawned)
+EndFunction
+
+Function goToSpawning()
+	GoToState(sStateSpawning)
 EndFunction
 
 Function goToSpawned()
@@ -46,12 +53,20 @@ ObjectReference Function getChildReference(String asChildName)
 EndFunction
 
 Function observeContainerChange(ChildPlacement childToObserve)
-	
+	RegisterForRemoteEvent(childToObserve.reference, "OnContainerChanged")
 EndFunction
 
 Function stopObservingContainerChange(ChildPlacement childToStopObserving)
 	UnregisterForRemoteEvent(childToStopObserving.reference, "OnContainerChanged")
 EndFunction
+
+Event ObjectReference.OnContainerChanged(ObjectReference akSender, ObjectReference akNewContainer, ObjectReference akOldContainer)
+	ChildPlacement childToHandle = findChildByReference(akSender)
+	if (childToHandle)
+		Spawny:Logger:ObjectReference.logContainerChanged(self, childToHandle)
+		clearChild(childToHandle, false)
+	endif
+EndEvent
 
 Function clearChild(ChildPlacement childToClear, Bool bDestroy = true)
 	if (!childToClear || !childToClear.reference)
@@ -67,6 +82,10 @@ Function clearChild(ChildPlacement childToClear, Bool bDestroy = true)
 	childToClear.reference = None
 EndFunction
 
+Function clearChildren()
+	
+EndFunction
+
 Function spawnChild(ChildPlacement childToSpawn)
 
 EndFunction
@@ -75,8 +94,33 @@ Function spawn()
 	
 EndFunction
 
-Event ObjectReference.OnContainerChanged(ObjectReference akSender, ObjectReference akNewContainer, ObjectReference akOldContainer)
-	
+Event OnWorkshopObjectPlaced(ObjectReference akReference)
+	goToSpawning()
+EndEvent
+
+Event OnWorkshopObjectGrabbed(ObjectReference akReference)
+	goToDespawned()
+EndEvent
+
+Event OnWorkshopObjectDestroyed(ObjectReference akReference)
+	goToDespawned()
+EndEvent
+
+Function Disable(Bool abFadeOut = false)
+	Spawny:Logger:ObjectReference.logDisabled(self)
+	goToDespawned()
+	parent.Disable(abFadeOut)
+EndFunction
+
+Function Delete()
+	Spawny:Logger:ObjectReference.logDeleted(self)
+	goToDespawned()
+	parent.Delete()
+EndFunction
+
+Event OnUnload()
+	Spawny:Logger:ObjectReference.logUnloaded(self)
+	!ChildrenMustAlwaysExist && goToDespawned()
 EndEvent
 
 Auto State Despawned
@@ -94,30 +138,37 @@ Auto State Despawned
 		endWhile
 	EndEvent
 	
-	Event OnWorkshopObjectPlaced(ObjectReference akReference)
-		goToSpawned()
-	EndEvent
-	
 	Function Enable(Bool abFadeIn = false)
 		Spawny:Logger:ObjectReference.log(self + " enabled while despawned")
 		parent.Enable(abFadeIn)
-		(PersistThroughUnload || Is3DLoaded()) && goToSpawned()
+		ChildrenMustAlwaysExist && goToSpawning()
 	EndFunction
-	
-	Event OnInit()
-		Spawny:Logger:ObjectReference.log(self + " initialized while despawned")
-		(PersistThroughUnload || IsEnabled()) && goToSpawned()
-	EndEvent
 	
 	Event OnLoad()
 		Spawny:Logger:ObjectReference.log(self + " loaded while despawned")
-		(!PersistThroughUnload || IsEnabled()) && goToSpawned()
+		IsEnabled() && goToSpawning()
 	EndEvent
+	
+	Function spawn()
+		bRespawn = true ; edge case for non-persistent objects (i.e. ChildrenMustAlwaysExist = false) that are spawning and adjusting at the same time
+	EndFunction
 EndState
 
-State Spawned
+State Spawning
 	Event OnBeginState(String asOldState)
-		spawn()
+		bRespawn = false
+		
+		if (Children && Children.Length)
+			Spawny:Logger:ObjectReference.logSpawning(self)
+		
+		Int iCounter = 0
+		while (iCounter < Children.Length)
+			spawnChild(Children[iCounter])
+			iCounter += 1
+		endWhile
+		endif
+		
+		goToSpawned()
 	EndEvent
 	
 	Function spawnChild(ChildPlacement childToSpawn)
@@ -135,53 +186,16 @@ State Spawned
 	EndFunction
 	
 	Function spawn()
-		if (!Children || 0 == Children.Length)
-			return
-		endif
-		
-		Spawny:Logger:ObjectReference.logSpawning(self)
-		
-		Int iCounter = 0
-		while (iCounter < Children.Length)
-			spawnChild(Children[iCounter])
-			iCounter += 1
-		endWhile
+		bRespawn = true ; edge case for non-persistent objects (i.e. ChildrenMustAlwaysExist = false) that are spawning and adjusting at the same time
 	EndFunction
-	
-	Function observeContainerChange(ChildPlacement childToObserve)
-		RegisterForRemoteEvent(childToObserve.reference, "OnContainerChanged")
-	EndFunction
-	
-	Event ObjectReference.OnContainerChanged(ObjectReference akSender, ObjectReference akNewContainer, ObjectReference akOldContainer)
-		ChildPlacement childToHandle = findChildByReference(akSender)
-		if (childToHandle)
-			Spawny:Logger:ObjectReference.logContainerChanged(self, childToHandle)
-			clearChild(childToHandle, false)
-		endif
-	EndEvent
-	
-	Event OnWorkshopObjectGrabbed(ObjectReference akReference)
-		goToDespawned()
-	EndEvent
-	
-	Event OnWorkshopObjectDestroyed(ObjectReference akReference)
-		goToDespawned()
-	EndEvent
-	
-	Function Disable(Bool abFadeOut = false)
-		Spawny:Logger:ObjectReference.logDisabled(self)
-		goToDespawned()
-		parent.Disable(abFadeOut)
-	EndFunction
+EndState
 
-	Function Delete()
-		Spawny:Logger:ObjectReference.logDeleted(self)
-		goToDespawned()
-		parent.Delete()
-	EndFunction
-	
-	Event OnUnload()
-		Spawny:Logger:ObjectReference.logUnloaded(self)
-		!PersistThroughUnload && goToDespawned()
+State Spawned
+	Event OnBeginState(String asOldState)
+		bRespawn && goToSpawning()
 	EndEvent
+
+	Function spawn()
+		goToSpawning()
+	EndFunction
 EndState

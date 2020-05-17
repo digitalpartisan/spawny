@@ -44,7 +44,7 @@ Bool Function isAllowed(Form akFormValue)
 EndFunction
 
 Int Function getIndexForReference(ObjectReference akTargetRef)
-	if (ReferenceNodes)
+	if (ReferenceNodes && akTargetRef)
 		return ReferenceNodes.FindStruct("reference", akTargetRef)
 	endif
 	
@@ -147,7 +147,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 	if (isAllowed(akBaseItem))
 		containerContents.Add(akBaseItem)
 	else
-		removeItem(akBaseItem, aiItemCount, false, Game.GetPlayer())
+		removeItem(akBaseItem, aiItemCount, false, akSourceContainer)
 	endif
 EndEvent
 
@@ -163,6 +163,11 @@ EndEvent
 
 Auto State Unloaded
 	Event OnLoad()
+		containerContents = new Form[0]
+		GoToState("Ready")
+	EndEvent
+	
+	Event OnInit()
 		containerContents = new Form[0]
 		GoToState("Ready")
 	EndEvent

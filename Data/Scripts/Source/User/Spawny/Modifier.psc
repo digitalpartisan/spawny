@@ -33,11 +33,7 @@ Group BehaviorSettings
 	{When set to true, the reference in question will be enabled when this modifier is applied.}
 EndGroup
 
-Group OwnershipSettings
-	Bool Property PlayerOwns = false Auto Const
-	Actor Property Owner Auto Const
-	Faction Property FactionOwner Auto Const
-EndGroup
+Spawny:Modifier:Ownership Property OwnershipModifier = None Auto Const
 
 Coordinate Function calculatePosition(ObjectReference akTargetRef)
 	if (!akTargetRef)
@@ -77,37 +73,20 @@ Twist Function calculateRotation(ObjectReference akTargetRef)
 	endif
 EndFunction
 
-Function apply(ObjectReference akTargetRef, Spawny:Adjuster adjuster)
+Function apply(ObjectReference akTargetRef, Spawny:Utility:Modification:AdjustmentHandler adjuster)
 	if (!akTargetRef)
 		Spawny:Logger:Modification.logModifierCannotApply(self, akTargetRef)
 		return
 	endif
 	
 	Spawny:Logger:Modification.logModifierApply(self, akTargetRef)
+	
+	ForceStatic && makeStatic(akTargetRef)
+	OwnershipModifier && OwnershipModifier.apply(akTargetRef)
+	
 	Coordinate newPosition = calculatePosition(akTargetRef)
 	Twist newRotation = calculateRotation(akTargetRef)
+	!(setPosition(akTargetRef, newPosition) && setRotation(akTargetRef, newRotation)) && adjuster && adjuster.register(akTargetRef, newPosition, newRotation)
 	
-	if ( (!setPosition(akTargetRef, newPosition) || !setRotation(akTargetRef, newRotation)) && adjuster )
-		adjuster.register(akTargetRef, newPosition, newRotation)
-	endif
-	
-	if (FactionOwner)
-		akTargetRef.SetFactionOwner(FactionOwner)
-	endif
-	
-	if (Owner)
-		akTargetRef.SetActorOwner(Owner.GetActorBase())
-	endif
-	
-	if (PlayerOwns)
-		akTargetRef.SetActorOwner(Game.GetPlayer().GetActorBase())
-	endif
-	
-	if (ForceStatic)
-		makeStatic(akTargetRef)
-	endif
-	
-	if (Enable)
-		akTargetRef.Enable()
-	endif
+	Enable && akTargetRef.Enable()
 EndFunction
