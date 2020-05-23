@@ -6,7 +6,25 @@ Struct Options
 	Bool forcePersist = false
 	Bool initiallyDisabled = false
 	Bool deleteWhenAble = false
+	String nodeName = ""
+	Bool attach = false
+	Int amount = 1
 EndStruct
+
+Options Function copyOptions(Options duplicateMe) Global
+	Options copy = new Options
+	
+	if (duplicateMe)
+		copy.forcePersist = duplicateMe.forcePersist
+		copy.initiallyDisabled = duplicateMe.initiallyDisabled
+		copy.deleteWhenAble = duplicateMe.deleteWhenAble
+		copy.nodeName = duplicateMe.nodeName
+		copy.attach = duplicateMe.attach
+		copy.amount = duplicateMe.amount
+	endif
+	
+	return copy
+EndFunction
 
 Form Function interpretForm(Form record) Global
 	FormList list = record as FormList
@@ -22,47 +40,46 @@ Form Function interpretForm(Form record) Global
 	endif
 EndFunction
 
-ObjectReference Function place(Form aFormToPlace, ObjectReference akTargetRef, Bool abForcePersist = false, Bool abInitiallyDisabled = false, Bool abDeleteWhenAble = false) Global
-	if (!aFormToPlace || !akTargetRef)
-		Spawny:Logger:Placement.logCannotPlace(aFormToPlace, akTargetRef)
+ObjectReference Function placeBasic(Form placeMe, ObjectReference atMe, Bool bForcePersist = false, Bool bInitiallyDisabled = false, Bool bDeleteWhenAble = false, Int iAmount = 1) Global
+	if (!placeMe || !atMe)
+		Spawny:Logger:Placement.logCannotPlace(placeMe, atMe)
 		return None
 	endif
 	
-	ObjectReference kResult = akTargetRef.PlaceAtMe(interpretForm(aFormToPlace), 1, abForcePersist, abInitiallyDisabled, abDeleteWhenAble)
-	Spawny:Logger:Placement.logPlacing(aFormToPlace, akTargetRef, abForcePersist, abInitiallyDisabled, abDeleteWhenAble, kResult)
+	ObjectReference result = atMe.PlaceAtMe(interpretForm(placeMe), iAmount, bForcePersist, bInitiallyDisabled, bDeleteWhenAble)
+	Spawny:Logger:Placement.logPlacing(placeMe, atMe, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, result)
 	
-	return kResult
+	return result
 EndFunction
 
-ObjectReference Function placeOptions(Form aFormToPlace, ObjectReference akTargetRef, Options optionData) Global
-	if (optionData)
-		return place(aFormToPlace, akTargetRef, optionData.forcePersist, optionData.initiallyDisabled, optionData.deleteWhenAble)
-	else
-		return place(aFormToPlace, akTargetRef)
-	endif
-EndFunction
-
-ObjectReference Function placeAtNode(Form aFormToPlace, ObjectReference akTargetRef, String asNodeName, Bool abAttach = false, Bool abForcePersist = false, Bool abInitiallyDisabled = false, Bool abDeleteWhenAble = false) Global
-	if (!aFormToPlace || !akTargetRef)
-		Spawny:Logger:Placement.logCannotPlace(aFormToPlace, akTargetRef)
+ObjectReference Function placeNode(Form placeMe, ObjectReference atMe, String nodeName, Bool bAttach = false, Bool bForcePersist = false, Bool bInitiallyDisabled = false, Bool bDeleteWhenAble = false, Int iAmount = 1) Global
+	if (!placeMe || !atMe)
+		Spawny:Logger:Placement.logCannotPlace(placeMe, atMe)
 		return None
 	endif
 	
-	if (akTargetRef.HasNode(asNodeName))
-		ObjectReference kResult = akTargetRef.PlaceAtNode(asNodeName, interpretForm(aFormToPlace), 1, abForcePersist, abInitiallyDisabled, abDeleteWhenAble, abAttach)
-		Spawny:Logger:Placement.logPlacingAtNode(aFormToPlace, akTargetRef, asNodeName, abForcePersist, abInitiallyDisabled, abDeleteWhenAble, abAttach, kResult)
-		
-		return kResult
+	if ("" == nodeName || !atMe.HasNode(nodeName))
+		Spawny:Logger:Placement.logReferenceDoesNotHaveNode(atMe, nodeName)
+		return None
+	endif
+	
+	ObjectReference result = atMe.PlaceAtNode(nodeName, interpretForm(placeMe), iAmount, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, bAttach)
+	Spawny:Logger:Placement.logPlacingAtNode(placeMe, atMe, nodeName, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, bAttach, result)
+	return result
+EndFunction
+
+ObjectReference Function placeGranular(Form placeMe, ObjectReference atMe, String nodeName = "", Bool bAttach = false, Bool bForcePersist = false, Bool bInitiallyDisabled = false, Bool bDeleteWhenAble = false, Int iAmount = 1) Global
+	if ("" != nodeName)
+		return placeNode(placeMe, atMe, nodeName, bAttach, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, iAmount)
 	else
-		Spawny:Logger:Placement.logReferenceDoesNotHaveNode(akTargetRef, asNodeName)
-		return place(aFormToPlace, akTargetRef, abForcePersist, abInitiallyDisabled, abDeleteWhenAble)
+		return placeBasic(placeMe, atMe, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, iAmount)
 	endif
 EndFunction
 
-ObjectReference Function placeAtNodeOptions(Form aFormToPlace, ObjectReference akTargetRef, String asNodeName, Options optionData, Bool abAttach = false) Global
+ObjectReference Function place(Form placeMe, ObjectReference atMe, Options optionData = None) Global
 	if (optionData)
-		return placeAtNode(aFormToPlace, akTargetRef, asNodeName, abAttach, optionData.forcePersist, optionData.initiallyDisabled, optionData.deleteWhenAble)
+		return placeGranular(placeMe, atMe, optionData.nodeName, optionData.attach, optionData.forcePersist, optionData.initiallyDisabled, optionData.deleteWhenAble, optionData.amount)
 	else
-		return placeAtNode(aFormToPlace, akTargetRef, asNodeName, abAttach)
+		return placeGranular(placeMe, atMe)
 	endif
 EndFunction

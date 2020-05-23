@@ -22,7 +22,7 @@ ObjectReference Function loadReference()
 		return None
 	endif
 	
-	return Plugin.lookupWithDigits(Digits) as ObjectReference
+	return Plugin.lookup(Digits) as ObjectReference
 EndFunction
 
 Function clearReference()

@@ -34,7 +34,7 @@ Bool Function attemptLoad(Spawny:ReferenceHandler:Listener listener)
 		return false
 	endif
 	
-	setValue(plugin.lookupWithDigits(Digits))
+	setValue(plugin.lookup(Digits))
 	
 	return hasValue()
 EndFunction

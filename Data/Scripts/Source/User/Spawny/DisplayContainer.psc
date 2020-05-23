@@ -64,7 +64,9 @@ Function displayReference(ReferenceNode data, Form fFormToDisplay)
 		return
 	endif
 	
-	data.reference = placeAtNodeOptions(fFormToDisplay, self, data.node, PlacementOptions, true)
+	Options myOptions = copyOptions(PlacementOptions)
+	myOptions.nodeName = data.node
+	data.reference = place(fFormToDisplay, self, myOptions)
 	
 	if (!data.reference)
 		return

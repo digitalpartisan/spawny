@@ -55,6 +55,15 @@ Coordinate Function calculatePosition(ObjectReference akTargetRef)
 	endif
 EndFunction
 
+Bool Function applyPosition(ObjectReference akTargetRef)
+{Returns true unless the position could not be applied to the reference in which case, returns false}
+	if (!akTargetRef)
+		return true ; techincally, a failure didn't happen
+	endif
+	
+	return setPosition(akTargetRef, calculatePosition(akTargetRef))
+EndFunction
+
 Twist Function calculateRotation(ObjectReference akTargetRef)
 	if (!akTargetRef)
 		return None
@@ -73,20 +82,34 @@ Twist Function calculateRotation(ObjectReference akTargetRef)
 	endif
 EndFunction
 
-Function apply(ObjectReference akTargetRef, Spawny:Utility:Modification:AdjustmentHandler adjuster)
+Bool Function applyRotation(ObjectReference akTargetRef)
+{Returns true unless the rotation could not be applied to the reference in which case, returns false}
+	if (!akTargetRef)
+		return true ; techincally, a failure didn't happen
+	endif
+	
+	return setRotation(akTargetRef, calculateRotation(akTargetRef))
+EndFunction
+
+Bool Function apply3DSettings(ObjectReference akTargetRef)
+	Bool bPosition = applyPosition(akTargetRef)
+	Bool bRotation = applyRotation(akTargetRef)
+	return bPosition && bRotation ; so that both are attempted to get as close as possible even if one of them fails, no & operator exists in Papyrus
+EndFunction
+
+Bool Function apply(ObjectReference akTargetRef)
+{Return true unless the position or rotation could not be correctly set in which case, returns false}
 	if (!akTargetRef)
 		Spawny:Logger:Modification.logModifierCannotApply(self, akTargetRef)
-		return
+		return true ; techincally, no failure occurred
 	endif
 	
 	Spawny:Logger:Modification.logModifierApply(self, akTargetRef)
 	
 	ForceStatic && makeStatic(akTargetRef)
 	OwnershipModifier && OwnershipModifier.apply(akTargetRef)
-	
-	Coordinate newPosition = calculatePosition(akTargetRef)
-	Twist newRotation = calculateRotation(akTargetRef)
-	!(setPosition(akTargetRef, newPosition) && setRotation(akTargetRef, newRotation)) && adjuster && adjuster.register(akTargetRef, newPosition, newRotation)
-	
+	Bool b3DSuccess = apply3DSettings(akTargetRef)
 	Enable && akTargetRef.Enable()
+	
+	return b3DSuccess
 EndFunction

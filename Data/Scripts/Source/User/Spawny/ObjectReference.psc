@@ -138,6 +138,11 @@ Auto State Despawned
 		endWhile
 	EndEvent
 	
+	Event OnInit()
+		Spawny:Logger:ObjectReference.log(self + " init while despawned")
+		ChildrenMustAlwaysExist && IsEnabled() && goToSpawning()
+	EndEvent
+	
 	Function Enable(Bool abFadeIn = false)
 		Spawny:Logger:ObjectReference.log(self + " enabled while despawned")
 		parent.Enable(abFadeIn)
@@ -177,7 +182,7 @@ State Spawning
 		endif
 		
 		clearChild(childToSpawn)
-		childToSpawn.reference = childToSpawn.spawnMe.spawnReference(self, childToSpawn.name)
+		childToSpawn.reference = childToSpawn.spawnMe.spawnReference(self)
 		if (childToSpawn.reference)
 			observeContainerChange(childToSpawn)
 		else

@@ -21,7 +21,7 @@ Form Function loadForm()
 		return None
 	endif
 	
-	return Plugin.lookupWithDigits(Digits)
+	return Plugin.lookup(Digits)
 EndFunction
 
 Function clearForm()

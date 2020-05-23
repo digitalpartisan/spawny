@@ -59,7 +59,7 @@ Actor Function loadActorForm()
 	endif
 	
 	if (Plugin && ActorDigits)
-		return Plugin.lookupWithDigits(ActorDigits) as Actor
+		return Plugin.lookup(ActorDigits) as Actor
 	endif
 	
 	return None
@@ -71,7 +71,7 @@ ActorBase Function loadActorBaseForm()
 	endif
 	
 	if (Plugin && ActorBaseDigits)
-		return Plugin.lookupWithDigits(ActorBaseDigits) as ActorBase
+		return Plugin.lookup(ActorBaseDigits) as ActorBase
 	endif
 	
 	return None
@@ -83,7 +83,7 @@ Faction Function loadFactionForm()
 	endif
 	
 	if (Plugin && FactionDigits)
-		return Plugin.lookupWithDigits(FactionDigits) as Faction
+		return Plugin.lookup(FactionDigits) as Faction
 	endif
 	
 	return None

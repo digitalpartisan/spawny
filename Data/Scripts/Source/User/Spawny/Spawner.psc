@@ -3,6 +3,7 @@ Scriptname Spawny:Spawner extends Quest Hidden
 Reference child scripts in the Spawny:Spawner namespace for implementation details and possible use cases.}
 
 CustomEvent Spawned
+CustomEvent ReferenceLoaded
 
 Import Spawny:Utility:Placement
 
@@ -10,14 +11,16 @@ Options Property PlacementOptions = None Auto Const
 {Useful for tweaking the state of the placed object.  No effect is had for a None value.}
 Spawny:Modifier Property Modifier = None Auto Const
 {Useful for modifying the placed object after placement.  No effect is had for a None value.}
-String Property NodeName = "" Auto Const
-{The NIF node at which to place the object.  Only effective when a value is specified and the named node exists on the target reference's nif.}
-Bool Property Attach = false Auto Const
-{Whether or not to attach the spawned reference to the node.  Has no effect unless the conditions on NodeName are met.}
-Spawny:Utility:Modification:AdjustmentHandler Property Adjuster Auto Const
-{The object responsible for adjusting mis-placed or mis-rotated references.  Optional if this spawner is not subject to the conditions that cause this.}
 
 ObjectReference spawnedObject = None
+
+Function sendSpawned()
+	SendCustomEvent("Spawned")
+EndFunction
+
+Function sendLoaded()
+	SendCustomEvent("ReferenceLoaded")
+EndFunction
 
 ObjectReference Function getSpawnedReference()
 {Returns the ObjectReference spawned by this spawner.  Returns None when no such ObjectReference exists.}
@@ -26,12 +29,18 @@ EndFunction
 
 Bool Function hasSpawnedReference()
 {True if this spawner has a handle to a reference (which is presumed to be the reference spawned by this spawner) and false otherwise (which would indicate that no reference has been spawned.)}
-	return None != getSpawnedReference()
+	return getSpawnedReference() as Bool
 EndFunction
+
+Event ObjectReference.OnLoad(ObjectReference akSender)
+	getSpawnedReference() == akSender && sendLoaded()
+EndEvent
 
 Function setSpawnedReference(ObjectReference akNewValue)
 {Used in order to allow child scripts access to the variable they would otherwise be unable to alter.}
+	spawnedObject && UnregisterForRemoteEvent(spawnedObject, "OnLoad")
 	spawnedObject = akNewValue
+	spawnedObject && RegisterForRemoteEvent(spawnedObject, "OnLoad")
 EndFunction
 
 Function clearSpawnedReference()
@@ -39,6 +48,23 @@ Function clearSpawnedReference()
 Called by internal logic as a helper method.
 Avoid using this unless you're sure of what you're doing.}
 	setSpawnedReference(None)
+EndFunction
+
+Spawny:Modifier Function getModifier()
+	return Modifier
+EndFunction
+
+Bool Function hasModifier()
+	return getModifier() as Bool
+EndFunction
+
+Spawny:Spawner:AdjustmentHandler Function getAdjuster()
+{Override this method to specify the adjuster to use in case of a 3D settings failure upon spawning.  Leave as-is if you know for a fact post-spawning adjustments will not be required.}
+	return None
+EndFunction
+
+Bool Function hasAdjuster()
+	return getAdjuster() as Bool
 EndFunction
 
 Form Function getForm()
@@ -57,11 +83,7 @@ EndFunction
 
 ObjectReference Function spawnBehavior()
 {Performs the actual spawning and returns the newly spawned ObjectReference.}
-	if ("" == NodeName)
-		return PlaceOptions(getForm(), getReference(), PlacementOptions)
-	else
-		return placeAtNodeOptions(getForm(), getReference(), NodeName, PlacementOptions, Attach)
-	endif
+	return place(getForm(), getReference(), PlacementOptions)
 EndFunction
 
 Function spawn()
@@ -69,9 +91,21 @@ Function spawn()
 Do not call this directly unless you're sure of what you're doing.
 Use of Start() on the quest record is a much better way to invoke this behavior.}
 	Spawny:Logger:Spawner.logSpawning(self)
+	
 	setSpawnedReference(spawnBehavior())
-	hasSpawnedReference() && Modifier && Modifier.apply(getSpawnedReference(), Adjuster)
-	SendCustomEvent("Spawned")
+	sendSpawned()
+	hasModifier() && !getModifier().apply(getSpawnedReference()) && hasAdjuster() && getAdjuster().register(self)
+EndFunction
+
+Bool Function adjust()
+	ObjectReference myReference = getSpawnedReference()
+	Spawny:Modifier myModifier = getModifier()
+	
+	if (!myReference || !myModifier)
+		return true ; no failure occurred
+	endif
+	
+	return myModifier.apply3DSettings(myReference)
 EndFunction
 
 Function despawn()
@@ -115,10 +149,12 @@ Function handleBulk(Spawny:Spawner[] spawners, Bool bStart = true) Global
 	Spawny:Spawner target = None
 	while (iCounter < spawners.Length)
 		target = spawners[iCounter] as Spawny:Spawner
-		if (bStart)
-			target && target.Start()
-		else
-			target && target.Stop()
+		if (target)
+			if (bStart)
+				target.Start()
+			else
+				target.Stop()
+			endif
 		endif
 		
 		iCounter += 1
