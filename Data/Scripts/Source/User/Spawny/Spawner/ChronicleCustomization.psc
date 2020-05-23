@@ -8,7 +8,7 @@ InjectTec:Plugin Property MyPlugin Auto Const Mandatory
 {The plugin required to load the object references observed by the Listener}
 FormList Property Spawners Auto Const Mandatory
 {A list of Spawny:Spawner records for this package's behavior to handle.}
-Spawny:ReferenceHandler:Listener Property Listener Auto Const Mandatory
+Spawny:ReferenceHandler:Listener Property Listener Auto Const
 {A list of Spawny:ReferenceHandler:Listener records for this package's behavior to handle.}
 
 Bool Function meetsPluginRequirement()
