@@ -1,4 +1,4 @@
-Scriptname Spawny:Logger:ObjectReference Hidden Const DebugOnly
+Scriptname Spawny:ObjectReference:Logger Hidden Const DebugOnly
 
 String[] Function getTags() Global
 	String[] tags = new String[0]

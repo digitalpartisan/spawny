@@ -1,4 +1,4 @@
-Scriptname Spawny:Logger:Placement Hidden Const DebugOnly
+Scriptname Spawny:Utility:Placement:Logger Hidden Const DebugOnly
 
 String[] Function getTags() Global
 	String[] tags = new String[0]

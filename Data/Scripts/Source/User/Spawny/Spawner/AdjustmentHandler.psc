@@ -1,4 +1,7 @@
-Scriptname spawny:spawner:AdjustmentHandler extends Quest
+Scriptname Spawny:Spawner:AdjustmentHandler extends Quest
+{This quest should be running prior to register() being called, though the failure case in this scenario has been somewhat hedged.}
+
+Jiffy:List Property Spawners Auto Const Mandatory
 
 Import Spawny:Utility:Movement
 Import Spawny:Utility:Rotation
@@ -7,8 +10,6 @@ Import Spawny:Utility:Modification
 String sStateUnstarted = "Unstarted" Const
 String sStateOperating = "Operating" Const
 String sStateShutdown = "Shutdown" Const
-
-Spawny:Spawner[] spawners = None
 
 Bool Function isState(String sValue)
 	return GetState() == sValue
@@ -60,12 +61,12 @@ Function stopObservingSpawner(Spawny:Spawner spawner)
 EndFunction
 
 Function registerSpawner(Spawny:Spawner spawner)
-	if (!spawner)
+	if (!spawner || !spawner.hasSpawnedReference() || !Spawners.Add(spawner))
+		Spawny:Logger.log(self + " will not adjust spawner " + spawner)
 		return
 	endif
 	
 	Spawny:Logger.log(spawner + " will be adjusted")
-	spawners.Add(spawner)
 	observeSpawner(spawner)
 EndFunction
 
@@ -79,12 +80,10 @@ EndEvent
 
 Auto State Unstarted
 	Event OnQuestInit()
-		spawners = new Spawny:Spawner[0]
 		goToOperating()
 	EndEvent
 	
 	Function register(Spawny:Spawner spawner)
-		Spawny:Logger.log(self + " is being started by " + spawner)
 		Start()
 		registerSpawner(spawner)
 	EndFunction
@@ -96,19 +95,17 @@ State Operating
 	EndFunction
 	
 	Event Spawny:Spawner.ReferenceLoaded(Spawny:Spawner spawner, Var[] args)
-		Int iIndex = -1
-		if (spawner)
-			iIndex = spawners.Find(spawner)
-		endif
-		if (iIndex < 0)
+		if (!Spawners.has(spawner))
 			return
 		endif
 		
 		Spawny:Logger.log(spawner + " is being adjusted")
 		if (spawner.adjust())
-			spawners.Remove(iIndex)
+			Spawners.Remove(spawner)
 			stopObservingSpawner(spawner)
 			postAdjustment(spawner)
+		else
+			Spawny:Logger.log(spawner + " failed to adjust")
 		endif
 	EndEvent
 EndState
@@ -116,11 +113,12 @@ EndState
 State Shutdown
 	Event OnBeginState(String asOldState)
 		Int iCounter = 0
-		while (iCounter < spawners.Length)
-			stopObservingSpawner(spawners[iCounter])
+		Spawny:Spawner[] spawnerSet = Spawners.getData() as Spawny:Spawner[]
+		while (iCounter < spawnerSet.Length)
+			stopObservingSpawner(spawnerSet[iCounter])
 			iCounter += 1
 		endWhile
 		
-		spawners = None
+		Spawners.clear()
 	EndEvent
 EndState

@@ -30,7 +30,7 @@ Coordinate Function rotateCoordinate(Coordinate coordinates, Twist angles) Globa
 {Logic used in the vectorPosition() method to determine the absolute value of coordinates when angles is treated as if it is a zero rotation.
 In other words, the given coordinates are adjusted as if they represent a point from the origin and the whole system is rotated by the values specified in angles.}
 	if (!coordinates || !angles)
-		Spawny:Logger:Modification.logCannotRotateCoordinate(coordinates, angles)
+		Spawny:Utility:Modification:Logger.logCannotRotateCoordinate(coordinates, angles)
 		return coordinates
 	endif
 	
@@ -56,14 +56,14 @@ In other words, the given coordinates are adjusted as if they represent a point 
 	result.y = intermediate.y * cosX + intermediate.z * sinX
 	result.z = -1 * intermediate.y * sinX + intermediate.z * cosX
 	
-	Spawny:Logger:Modification.logRotateCoordinate(coordinates, angles, result)
+	Spawny:Utility:Modification:Logger.logRotateCoordinate(coordinates, angles, result)
 	return result
 EndFunction
 
 Function toggleStatic(ObjectReference akTargetRef, Bool abMakeStatic = true) Global
 {Useful utility method to make any given ObjectReference "static" is that it cannot be activated and will not move.}
 	if (!akTargetRef)
-		Spawny:Logger:Modification.logCannotToggleStatic(akTargetRef)
+		Spawny:Utility:Modification:Logger.logCannotToggleStatic(akTargetRef)
 		return
 	endif
 	
@@ -78,12 +78,12 @@ EndFunction
 
 Function makeStatic(ObjectReference akTargetRef) Global
 {Uses toggleStatic() to force the given ObjectReference to be un-activatable as well as unmovable.}
-	Spawny:Logger:Modification.logMakeStatic(akTargetRef)
+	Spawny:Utility:Modification:Logger.logMakeStatic(akTargetRef)
 	toggleStatic(akTargetRef)
 EndFunction
 
 Function unmakeStatic(ObjectReference akTargetRef) Global
 {Uses toggleStatic() on the given ObjectReference to remove the activation block and motion hinderance.}
-	Spawny:Logger:Modification.logUnmakeStatic(akTargetRef)
+	Spawny:Utility:Modification:Logger.logUnmakeStatic(akTargetRef)
 	toggleStatic(akTargetRef, false)
 EndFunction

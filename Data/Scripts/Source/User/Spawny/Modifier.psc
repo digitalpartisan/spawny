@@ -100,11 +100,11 @@ EndFunction
 Bool Function apply(ObjectReference akTargetRef)
 {Return true unless the position or rotation could not be correctly set in which case, returns false}
 	if (!akTargetRef)
-		Spawny:Logger:Modification.logModifierCannotApply(self, akTargetRef)
+		Spawny:Utility:Modification:Logger.logModifierCannotApply(self, akTargetRef)
 		return true ; techincally, no failure occurred
 	endif
 	
-	Spawny:Logger:Modification.logModifierApply(self, akTargetRef)
+	Spawny:Utility:Modification:Logger.logModifierApply(self, akTargetRef)
 	
 	ForceStatic && makeStatic(akTargetRef)
 	OwnershipModifier && OwnershipModifier.apply(akTargetRef)

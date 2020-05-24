@@ -38,6 +38,7 @@ EndEvent
 
 Function setSpawnedReference(ObjectReference akNewValue)
 {Used in order to allow child scripts access to the variable they would otherwise be unable to alter.}
+	Spawny:Logger.log(self + " spawned " + akNewValue)
 	spawnedObject && UnregisterForRemoteEvent(spawnedObject, "OnLoad")
 	spawnedObject = akNewValue
 	spawnedObject && RegisterForRemoteEvent(spawnedObject, "OnLoad")
@@ -90,7 +91,7 @@ Function spawn()
 {Causes the spawner to spawn the specified form at the specified target reference.
 Do not call this directly unless you're sure of what you're doing.
 Use of Start() on the quest record is a much better way to invoke this behavior.}
-	Spawny:Logger:Spawner.logSpawning(self)
+	Spawny:Spawner:Logger.logSpawning(self)
 	
 	setSpawnedReference(spawnBehavior())
 	sendSpawned()
@@ -131,12 +132,12 @@ Function shutdownBehavior()
 EndFunction
 
 Event OnQuestInit()
-	Spawny:Logger:Spawner.logStartup(self)
+	Spawny:Spawner:Logger.logStartup(self)
 	startupBehavior()
 EndEvent
 
 Event OnQuestShutdown()
-	Spawny:Logger:Spawner.logShutdown(self)
+	Spawny:Spawner:Logger.logShutdown(self)
 	shutdownBehavior()
 EndEvent
 

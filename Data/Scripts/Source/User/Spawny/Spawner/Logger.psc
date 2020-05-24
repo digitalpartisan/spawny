@@ -1,4 +1,4 @@
-Scriptname Spawny:Logger:Spawner Hidden Const DebugOnly
+Scriptname Spawny:Spawner:Logger Hidden Const DebugOnly
 
 String[] Function getTags() Global
 	String[] tags = new String[0]
@@ -29,3 +29,4 @@ EndFunction
 Bool Function logSpawning(Spawny:Spawner spawner) Global
 	return log("Spawner " + spawner + " is spawning")
 EndFunction
+

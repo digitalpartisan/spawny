@@ -63,7 +63,7 @@ EndFunction
 Event ObjectReference.OnContainerChanged(ObjectReference akSender, ObjectReference akNewContainer, ObjectReference akOldContainer)
 	ChildPlacement childToHandle = findChildByReference(akSender)
 	if (childToHandle)
-		Spawny:Logger:ObjectReference.logContainerChanged(self, childToHandle)
+		Spawny:ObjectReference:Logger.logContainerChanged(self, childToHandle)
 		clearChild(childToHandle, false)
 	endif
 EndEvent
@@ -107,19 +107,19 @@ Event OnWorkshopObjectDestroyed(ObjectReference akReference)
 EndEvent
 
 Function Disable(Bool abFadeOut = false)
-	Spawny:Logger:ObjectReference.logDisabled(self)
+	Spawny:ObjectReference:Logger.logDisabled(self)
 	goToDespawned()
 	parent.Disable(abFadeOut)
 EndFunction
 
 Function Delete()
-	Spawny:Logger:ObjectReference.logDeleted(self)
+	Spawny:ObjectReference:Logger.logDeleted(self)
 	goToDespawned()
 	parent.Delete()
 EndFunction
 
 Event OnUnload()
-	Spawny:Logger:ObjectReference.logUnloaded(self)
+	Spawny:ObjectReference:Logger.logUnloaded(self)
 	!ChildrenMustAlwaysExist && goToDespawned()
 EndEvent
 
@@ -129,7 +129,7 @@ Auto State Despawned
 			return
 		endIf
 		
-		Spawny:Logger:ObjectReference.logDespawning(self)
+		Spawny:ObjectReference:Logger.logDespawning(self)
 		
 		Int iCounter = 0
 		while (iCounter < Children.Length)
@@ -139,18 +139,18 @@ Auto State Despawned
 	EndEvent
 	
 	Event OnInit()
-		Spawny:Logger:ObjectReference.log(self + " init while despawned")
+		Spawny:ObjectReference:Logger.log(self + " init while despawned")
 		ChildrenMustAlwaysExist && IsEnabled() && goToSpawning()
 	EndEvent
 	
 	Function Enable(Bool abFadeIn = false)
-		Spawny:Logger:ObjectReference.log(self + " enabled while despawned")
+		Spawny:ObjectReference:Logger.log(self + " enabled while despawned")
 		parent.Enable(abFadeIn)
 		ChildrenMustAlwaysExist && goToSpawning()
 	EndFunction
 	
 	Event OnLoad()
-		Spawny:Logger:ObjectReference.log(self + " loaded while despawned")
+		Spawny:ObjectReference:Logger.log(self + " loaded while despawned")
 		IsEnabled() && goToSpawning()
 	EndEvent
 	
@@ -161,16 +161,16 @@ EndState
 
 State Spawning
 	Event OnBeginState(String asOldState)
+		Spawny:Logger.log(self + " is spawning children")
 		bRespawn = false
 		
 		if (Children && Children.Length)
-			Spawny:Logger:ObjectReference.logSpawning(self)
-		
-		Int iCounter = 0
-		while (iCounter < Children.Length)
-			spawnChild(Children[iCounter])
-			iCounter += 1
-		endWhile
+			
+			Int iCounter = 0
+			while (iCounter < Children.Length)
+				spawnChild(Children[iCounter])
+				iCounter += 1
+			endWhile
 		endif
 		
 		goToSpawned()
@@ -186,7 +186,7 @@ State Spawning
 		if (childToSpawn.reference)
 			observeContainerChange(childToSpawn)
 		else
-			Spawny:Logger:ObjectReference.logFailureToSpawn(self, childToSpawn)
+			Spawny:ObjectReference:Logger.logFailureToSpawn(self, childToSpawn)
 		endif
 	EndFunction
 	

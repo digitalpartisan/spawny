@@ -42,29 +42,29 @@ EndFunction
 
 ObjectReference Function placeBasic(Form placeMe, ObjectReference atMe, Bool bForcePersist = false, Bool bInitiallyDisabled = false, Bool bDeleteWhenAble = false, Int iAmount = 1) Global
 	if (!placeMe || !atMe)
-		Spawny:Logger:Placement.logCannotPlace(placeMe, atMe)
+		Spawny:Utility:Placement:Logger.logCannotPlace(placeMe, atMe)
 		return None
 	endif
 	
 	ObjectReference result = atMe.PlaceAtMe(interpretForm(placeMe), iAmount, bForcePersist, bInitiallyDisabled, bDeleteWhenAble)
-	Spawny:Logger:Placement.logPlacing(placeMe, atMe, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, result)
+	Spawny:Utility:Placement:Logger.logPlacing(placeMe, atMe, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, result)
 	
 	return result
 EndFunction
 
 ObjectReference Function placeNode(Form placeMe, ObjectReference atMe, String nodeName, Bool bAttach = false, Bool bForcePersist = false, Bool bInitiallyDisabled = false, Bool bDeleteWhenAble = false, Int iAmount = 1) Global
 	if (!placeMe || !atMe)
-		Spawny:Logger:Placement.logCannotPlace(placeMe, atMe)
+		Spawny:Utility:Placement:Logger.logCannotPlace(placeMe, atMe)
 		return None
 	endif
 	
 	if ("" == nodeName || !atMe.HasNode(nodeName))
-		Spawny:Logger:Placement.logReferenceDoesNotHaveNode(atMe, nodeName)
+		Spawny:Utility:Placement:Logger.logReferenceDoesNotHaveNode(atMe, nodeName)
 		return None
 	endif
 	
 	ObjectReference result = atMe.PlaceAtNode(nodeName, interpretForm(placeMe), iAmount, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, bAttach)
-	Spawny:Logger:Placement.logPlacingAtNode(placeMe, atMe, nodeName, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, bAttach, result)
+	Spawny:Utility:Placement:Logger.logPlacingAtNode(placeMe, atMe, nodeName, bForcePersist, bInitiallyDisabled, bDeleteWhenAble, bAttach, result)
 	return result
 EndFunction
 

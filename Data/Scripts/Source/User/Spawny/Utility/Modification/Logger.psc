@@ -1,4 +1,4 @@
-Scriptname Spawny:Logger:Modification Hidden Const DebugOnly
+Scriptname Spawny:Utility:Modification:Logger Hidden Const DebugOnly
 
 Import Spawny:Utility:Movement
 Import Spawny:Utility:Rotation
