@@ -38,7 +38,6 @@ EndEvent
 
 Function setSpawnedReference(ObjectReference akNewValue)
 {Used in order to allow child scripts access to the variable they would otherwise be unable to alter.}
-	Spawny:Logger.log(self + " spawned " + akNewValue)
 	spawnedObject && UnregisterForRemoteEvent(spawnedObject, "OnLoad")
 	spawnedObject = akNewValue
 	spawnedObject && RegisterForRemoteEvent(spawnedObject, "OnLoad")

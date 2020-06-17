@@ -103,14 +103,12 @@ EndFunction
 
 Event OnTimer(Int aiTimerID)
 	if (TimerID == aiTimerID)
-		Spawny:Logger.log(self + " detected a timer event")
 		examine()
 	endif
 EndEvent
 
 Function startCheckTimer()
 	Float duration = getTimerDuration()
-	Spawny:Logger.log(self + " started a timer with length " + duration)
 	StartTimer(duration, TimerID)
 EndFunction
 
@@ -156,25 +154,19 @@ EndState
 State Observing
 	Event OnBeginState(String asOldState)
 		if (!MyListener.isReady())
-			Spawny:Logger.log(self + " does not have installed plugin")
 			goToDormant()
 			return
 		endif
 		
 		if (!MyLocation.attemptLoad(MyListener))
-			Spawny:Logger.log(self + " has invalid location ID")
 			goToDormant()
 			return
 		endif
-		
-		Spawny:Logger.log(self + " is observing")
 		
 		examine()
 	EndEvent
 	
 	Function stateRefresh()
-		Spawny:Logger.log(self + " refreshing state")
-		
 		if (!MyListener.isReady()); paranoia, but if the plugin is suddenly out of the load order, drop everything for the sake of safety
 			goToDormant()
 		endif
@@ -196,7 +188,6 @@ State Observing
 	
 	Function examine()
 	{When called, forces a state update of the various Spawny:ReferenceHandler:DataPoint properties on this script and then determines if the targetted reference can be loaded.}
-		Spawny:Logger.log(self + " is examining")
 		stateRefresh()
 		stateCheck()
 	EndFunction
@@ -220,7 +211,6 @@ State Ready
 			goToObserving()
 		endif
 		
-		Spawny:Logger.log(self + " sent reference ready")
 		SendCustomEvent("ReferenceReady")
 		stopObservingEvents()
 	EndEvent

@@ -62,11 +62,11 @@ EndFunction
 
 Function registerSpawner(Spawny:Spawner spawner)
 	if (!spawner || !spawner.hasSpawnedReference() || !Spawners.Add(spawner))
-		Spawny:Logger.log(self + " will not adjust spawner " + spawner)
+		Spawny:Spawner:Logger.logWillNotAdjust(self, spawner)
 		return
 	endif
 	
-	Spawny:Logger.log(spawner + " will be adjusted")
+	Spawny:Spawner:Logger.logWillAdjust(self, spawner)
 	observeSpawner(spawner)
 EndFunction
 
@@ -99,13 +99,13 @@ State Operating
 			return
 		endif
 		
-		Spawny:Logger.log(spawner + " is being adjusted")
+		Spawny:Spawner:Logger.logAdjusting(self, spawner)
 		if (spawner.adjust())
 			Spawners.Remove(spawner)
 			stopObservingSpawner(spawner)
 			postAdjustment(spawner)
 		else
-			Spawny:Logger.log(spawner + " failed to adjust")
+			Spawny:Spawner:Logger.logAdjustmentFailure(self, spawner)
 		endif
 	EndEvent
 EndState

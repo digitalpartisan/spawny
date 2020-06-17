@@ -139,18 +139,15 @@ Auto State Despawned
 	EndEvent
 	
 	Event OnInit()
-		Spawny:ObjectReference:Logger.log(self + " init while despawned")
 		ChildrenMustAlwaysExist && IsEnabled() && goToSpawning()
 	EndEvent
 	
 	Function Enable(Bool abFadeIn = false)
-		Spawny:ObjectReference:Logger.log(self + " enabled while despawned")
 		parent.Enable(abFadeIn)
 		ChildrenMustAlwaysExist && goToSpawning()
 	EndFunction
 	
 	Event OnLoad()
-		Spawny:ObjectReference:Logger.log(self + " loaded while despawned")
 		IsEnabled() && goToSpawning()
 	EndEvent
 	
@@ -161,7 +158,6 @@ EndState
 
 State Spawning
 	Event OnBeginState(String asOldState)
-		Spawny:Logger.log(self + " is spawning children")
 		bRespawn = false
 		
 		if (Children && Children.Length)

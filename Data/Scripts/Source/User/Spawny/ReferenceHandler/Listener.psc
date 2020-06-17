@@ -45,8 +45,6 @@ Function processHandlers(Bool bShutdown = false)
 		return
 	endif
 	
-	Spawny:Logger.log(self + " is processing handlers")
-	
 	Int iCounter = 0
 	Int iSize = Handlers.GetSize()
 	Spawny:ReferenceHandler handler = None
@@ -72,7 +70,6 @@ EndEvent
 
 Event Actor.OnLocationChange(Actor akSender, Location akOldLoc, Location akNewLoc)
 	if (Game.GetPlayer() == akSender)
-		Spawny:Logger.log(self + " observed a location change")
 		processHandlers()
 	endif
 EndEvent

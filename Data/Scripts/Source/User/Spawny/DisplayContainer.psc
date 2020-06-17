@@ -86,7 +86,6 @@ Function displayReference(ReferenceNode data, Form fFormToDisplay)
 EndFunction
 
 Function displayReferences()
-	Spawny:Logger.log("displaying references")
 	Int iCounter = 0
 	while (iCounter < containerContents.Length && iCounter < ReferenceNodes.Length)
 		displayReference(getReferenceNodeAtIndex(iCounter), containerContents[iCounter])
@@ -104,7 +103,6 @@ Function deleteReference(ReferenceNode data)
 EndFunction
 
 Function deleteReferences()
-	Spawny:Logger.log("deleting references")
 	Int iCounter = 0
 	while (iCounter < ReferenceNodes.Length)
 		deleteReference(ReferenceNodes[iCounter])

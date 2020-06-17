@@ -30,3 +30,18 @@ Bool Function logSpawning(Spawny:Spawner spawner) Global
 	return log("Spawner " + spawner + " is spawning")
 EndFunction
 
+Bool Function logWillAdjust(Spawny:Spawner:AdjustmentHandler adjuster, Spawny:Spawner spawner) Global
+	return log(adjuster + " will adjust " + spawner)
+EndFunction
+
+Bool Function logWillNotAdjust(Spawny:Spawner:AdjustmentHandler adjuster, Spawny:Spawner spawner) Global
+	return log(adjuster + " will not adjust " + spawner)
+EndFunction
+
+Bool Function logAdjusting(Spawny:Spawner:AdjustmentHandler adjuster, Spawny:Spawner spawner) Global
+	return log(adjuster + " is adjusting " + spawner)
+EndFunction
+
+Bool Function logAdjustmentFailure(Spawny:Spawner:AdjustmentHandler adjuster, Spawny:Spawner spawner) Global
+	return error(adjuster + " failed to adjust " + spawner)
+EndFunction
