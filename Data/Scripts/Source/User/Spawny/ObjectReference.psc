@@ -152,7 +152,7 @@ Auto State Despawned
 	EndEvent
 	
 	Function spawn()
-		bRespawn = true ; edge case for non-persistent objects (i.e. ChildrenMustAlwaysExist = false) that are spawning and adjusting at the same time
+		goToSpawning()
 	EndFunction
 EndState
 
