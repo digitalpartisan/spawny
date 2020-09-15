@@ -1,2 +1,0 @@
-SCAFFOLD_MOD="Spawny"
-SCAFFOLD_GAME="fallout4"
