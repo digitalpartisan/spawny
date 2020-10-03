@@ -120,6 +120,16 @@ Use of Stop() on the quest record is a much better way to invoke this behavior.}
 	endif
 EndFunction
 
+Bool Function goTo()
+{Places the player at the spawned reference or as close to it as is possible.}
+	if (hasSpawnedReference())
+		Game.GetPlayer().MoveTo(getSpawnedReference())
+		return true
+	endif
+
+	return false
+EndFunction
+
 Function startupBehavior()
 {See cautionary note on spawn().  Prefer the use of Start() on the quest record to calling this method.}
 	spawn()

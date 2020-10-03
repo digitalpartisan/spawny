@@ -43,16 +43,36 @@ Bool Function isDataPointValid(Spawny:ReferenceHandler:DataPoint dataPoint)
 	return dataPoint && dataPoint.isSet()
 EndFunction
 
+Spawny:ReferenceHandler:DataPoint:Location Function getLocation()
+	return MyLocation
+EndFunction
+
 Bool Function hasLocationSetting()
-	return isDataPointValid(MyLocation)
+	return isDataPointValid(getLocation())
+EndFunction
+
+Spawny:ReferenceHandler:DataPoint:Reference Function getReference()
+	return MyReference
 EndFunction
 
 Bool Function hasReferenceSetting()
-	return isDataPointValid(MyReference)
+	return isDataPointValid(getReference())
+EndFunction
+
+Spawny:ReferenceHandler:DataPoint:Cell Function getCell()
+	return MyCell
 EndFunction
 
 Bool Function hasCellSetting()
-	return isDataPointValid(MyCell)
+	return isDataPointValid(getCell())
+EndFunction
+
+Spawny:ReferenceHandler:Listener Function getListener()
+	return MyListener
+EndFunction
+
+Function goTo()
+	hasCellSetting() && getCell().centerOn()
 EndFunction
 
 Function goToDormant()
@@ -122,11 +142,11 @@ EndFunction
 
 Function clearDataPoints()
 {Forces the values in the Spawny:ReferenceHandler:DataPoint properties to be cleared so that they can be reloaded.  Useful in situations where the wrong record IDs / Digits made it in to a public release of a mod.}
-	MyReference.clearValue()
-	MyLocation.clearValue()
+	getReference().clearValue()
+	getLocation().clearValue()
 	
 	if (hasCellSetting())
-		MyCell.clearValue()
+		getCell().clearValue()
 	endif
 EndFunction
 
@@ -153,12 +173,12 @@ EndState
 
 State Observing
 	Event OnBeginState(String asOldState)
-		if (!MyListener.isReady())
+		if (!getListener().isReady())
 			goToDormant()
 			return
 		endif
 		
-		if (!MyLocation.attemptLoad(MyListener))
+		if (!getLocation().attemptLoad(MyListener))
 			goToDormant()
 			return
 		endif
@@ -167,19 +187,19 @@ State Observing
 	EndEvent
 	
 	Function stateRefresh()
-		if (!MyListener.isReady()); paranoia, but if the plugin is suddenly out of the load order, drop everything for the sake of safety
+		if (!getListener().isReady()); paranoia, but if the plugin is suddenly out of the load order, drop everything for the sake of safety
 			goToDormant()
 		endif
 		
-		if (MyLocation.containsPlayer())
-			MyReference.attemptLoad(MyListener)
+		if (getLocation().containsPlayer())
+			getReference().attemptLoad(MyListener)
 		else
 			goToDormant()
 		endif
 	EndFunction
 	
 	Function stateCheck()
-		if (MyReference.hasValue())
+		if (getReference().hasValue())
 			goToReady()
 		else
 			startCheckTimer()
@@ -207,7 +227,7 @@ EndState
 
 State Ready
 	Event OnBeginState(String asOldState)
-		if (!MyReference.hasValue())
+		if (!getReference().hasValue())
 			goToObserving()
 		endif
 		

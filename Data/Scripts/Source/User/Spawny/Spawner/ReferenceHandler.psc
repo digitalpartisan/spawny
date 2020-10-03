@@ -10,8 +10,12 @@ Form Function getForm()
 	return ReusableForm.getForm()
 EndFunction
 
+Spawny:ReferenceHandler Function getReferencehandler()
+	return ReferenceHandler
+EndFunction
+
 ObjectReference Function getReference()
-	return ReferenceHandler.MyReference.getReference()
+	return getReferenceHandler().MyReference.getReference()
 EndFunction
 
 Function observeReferenceReady()
@@ -31,6 +35,15 @@ Event Spawny:ReferenceHandler.ReferenceReady(Spawny:ReferenceHandler handler, Va
 	spawn()
 	ReferenceHandler.goToComplete()
 EndEvent
+
+Bool Function goTo()
+	if (parent.goTo())
+		return true
+	endif
+
+	getReferencehandler().goTo()
+	return true
+EndFunction
 
 Function startupBehavior()
 	observeReferenceReady()

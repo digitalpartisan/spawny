@@ -11,8 +11,20 @@ FormList Property Spawners Auto Const Mandatory
 Spawny:ReferenceHandler:Listener Property Listener Auto Const
 {A list of Spawny:ReferenceHandler:Listener records for this package's behavior to handle.}
 
+InjectTec:Plugin Function getPlugin()
+	return MyPlugin
+EndFunction
+
 Bool Function meetsPluginRequirement()
-	return MyPlugin && MyPlugin.isInstalled()
+	return getPlugin().isInstalled()
+EndFunction
+
+FormList Function getSpawners()
+	return Spawners
+EndFunction
+
+Spawny:ReferenceHandler:Listener Function getListener()
+	return Listener
 EndFunction
 
 Function handle(Bool bStart = true)
@@ -20,12 +32,15 @@ Function handle(Bool bStart = true)
 		return
 	endif
 	
+	FormList mySpawners = getSpawners()
+	Spawny:ReferenceHandler:Listener myListener = getListener()
+
 	if (bStart)
-		Spawners && Spawny:Spawner.startList(Spawners)
-		Listener && Listener.Start()
+		Spawny:Spawner.startList(mySpawners)
+		myListener && myListener.Start()
 	else
-		Spawners && Spawny:Spawner.stopList(Spawners)
-		Listener && Listener.Stop()
+		Spawny:Spawner.stopList(mySpawners)
+		myListener && myListener.Stop()
 	endif
 EndFunction
 
