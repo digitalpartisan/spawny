@@ -17,7 +17,7 @@ Cell Function getCell()
 EndFunction
 
 Bool Function isLoaded()
-	return getCell().isLoaded()
+	return hasValue() && getCell().isLoaded()
 EndFunction
 
 String Function getCellName()
