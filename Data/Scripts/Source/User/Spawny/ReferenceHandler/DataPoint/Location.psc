@@ -19,7 +19,12 @@ Location Function getLocation()
 EndFunction
 
 Bool Function containsPlayer()
-	return Game.GetPlayer().IsInLocation(getLocation())
+	Location targetLocation = getLocation()
+	if (!targetLocation)
+		return false
+	endif
+
+	return Game.GetPlayer().IsInLocation(targetLocation)
 EndFunction
 
 Bool Function attemptLoad(Spawny:ReferenceHandler:Listener listener)
